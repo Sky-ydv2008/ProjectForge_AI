@@ -9,12 +9,12 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0b0f19",
+        background: "#07090e",
         foreground: "#f8fafc",
         card: {
-          DEFAULT: "#111726",
+          DEFAULT: "#0d111c",
           border: "#1e293b",
-          hover: "#161e30",
+          hover: "#131a2b",
         },
         brand: {
           50: "#ecfeff",
@@ -31,8 +31,10 @@ const config: Config = {
       },
       boxShadow: {
         "subtle": "0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-        "card": "0 0 0 1px rgba(255, 255, 255, 0.05), 0 2px 8px 0 rgba(0, 0, 0, 0.3)",
-        "glow-subtle": "0 0 20px -3px rgba(56, 189, 248, 0.15)",
+        "card": "0 0 0 1px rgba(255, 255, 255, 0.06), 0 4px 12px 0 rgba(0, 0, 0, 0.4)",
+        "glow-cyan": "0 0 25px -4px rgba(56, 189, 248, 0.15)",
+        "glow-indigo": "0 0 25px -4px rgba(99, 102, 241, 0.15)",
+        "glow-danger": "0 0 25px -4px rgba(239, 68, 68, 0.15)",
       },
     },
   },

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Hammer, Sparkles, Rocket, ShieldAlert, LayoutDashboard, Compass, Cpu, Menu, X, ArrowRight, LogOut, User, Lock } from "lucide-react";
+import { Hammer, Sparkles, Rocket, ShieldAlert, LayoutDashboard, Compass, Cpu, Menu, X, LogOut, Lock } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { useAuth } from "@/context/AuthContext";
@@ -25,17 +25,17 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-[#0b0f19]/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-[#07090e]/90 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 text-slate-950 font-bold group-hover:bg-cyan-400 transition-colors">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-indigo-500 text-slate-950 font-bold group-hover:scale-105 transition-transform shadow-glow-cyan">
             <Hammer className="h-4 w-4 stroke-[2.5]" />
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-semibold tracking-tight text-white group-hover:text-cyan-300 transition-colors">
-              ProjectForge <span className="text-slate-400 font-normal">AI</span>
+            <span className="text-sm font-bold tracking-tight text-white group-hover:text-cyan-300 transition-colors">
+              ProjectForge<span className="text-cyan-400">.AI</span>
             </span>
             <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700">
               v2.0
@@ -54,7 +54,7 @@ export function Navbar() {
                 href={link.href}
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
                   isActive
-                    ? "bg-slate-800 text-white font-semibold border border-slate-700"
+                    ? "bg-slate-800/90 text-white font-semibold border border-slate-700/80 shadow-sm"
                     : "text-slate-300 hover:text-white hover:bg-slate-800/40"
                 }`}
               >
@@ -70,19 +70,19 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Right Actions / User State */}
+        {/* Right Actions / Auth State */}
         <div className="hidden sm:flex items-center gap-3">
           {isDemoMode && (
             <Badge variant="success" className="gap-1 font-mono text-[10px] py-0.5">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Demo Mode
+              Demo Mode Active
             </Badge>
           )}
 
           {user ? (
             <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
               <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 border border-cyan-500/30 text-xs font-bold text-cyan-400">
                   {user.fullName.substring(0, 2).toUpperCase()}
                 </div>
                 <span className="text-xs font-medium text-slate-200 max-w-[110px] truncate">{user.fullName}</span>
