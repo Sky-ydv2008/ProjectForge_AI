@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, Compass, CheckCircle2, BarChart2, ShieldAlert, Layers, Filter, Check } from "lucide-react";
+import { Sparkles, Compass, CheckCircle2, ArrowRight, BarChart2, ShieldAlert, Cpu, Layers, Code2, AlertTriangle, Filter, Check, Copy } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -13,6 +13,7 @@ import { HealthScoreCard } from "@/components/scoring/HealthScoreCard";
 import { compareProjectCandidates, ProjectComparisonAnalysis } from "@/lib/scoring/comparison";
 import { ProjectComparison } from "./ProjectComparison";
 import { StudentProfileInput } from "@/lib/validation/profile";
+import { generateAICodingPrompts } from "@/lib/ai/prompt-generator";
 
 export function CandidateGenerator() {
   const { profile: contextProfile } = useProfile();
@@ -25,6 +26,7 @@ export function CandidateGenerator() {
   const [comparisonAnalysis, setComparisonAnalysis] = useState<ProjectComparisonAnalysis | null>(null);
   const [viewMode, setViewMode] = useState<"cards" | "matrix">("cards");
   const [categoryFilter, setCategoryFilter] = useState<string>("All");
+  const [copiedPromptId, setCopiedPromptId] = useState<string | null>(null);
 
   // Read latest saved profile from localStorage on mount
   useEffect(() => {
@@ -87,6 +89,27 @@ export function CandidateGenerator() {
       const calculated = calculateDeterministicHealthScore(p, cand);
       setScoreBreakdown(calculated);
     }
+  };
+
+  const handleCopyCandidatePrompt = (cand: AIProjectCandidate) => {
+    const p = activeProfile || contextProfile || {
+      field: "Computer Science",
+      degree: "B.Tech CS 7th Sem",
+      skills: ["Python", "React"],
+      interests: ["Healthcare AI"],
+      experience: "intermediate",
+      team_size: 3,
+      timeline_months: 4,
+      budget: "free",
+      hardware: "standard_laptop",
+      career_goal: "Full Stack Developer",
+      difficulty: "balanced_innovation",
+    };
+
+    const suite = generateAICodingPrompts(p, cand);
+    navigator.clipboard.writeText(suite.masterPrompt);
+    setCopiedPromptId(cand.id);
+    setTimeout(() => setCopiedPromptId(null), 2000);
   };
 
   const filteredCandidates = candidates.filter((cand) => {
@@ -236,6 +259,7 @@ export function CandidateGenerator() {
             {filteredCandidates.map((cand) => {
               const isSelected = selectedCandidate?.id === cand.id;
               const isTop = comparisonAnalysis?.recommendedCandidate.candidate.id === cand.id;
+              const isCopied = copiedPromptId === cand.id;
 
               return (
                 <Card
@@ -313,6 +337,16 @@ export function CandidateGenerator() {
                     >
                       {isSelected ? <CheckCircle2 className="h-3.5 w-3.5" /> : <BarChart2 className="h-3.5 w-3.5 text-cyan-400" />}
                       <span>{isSelected ? "Candidate Evaluated" : "Evaluate Candidate & Score"}</span>
+                    </Button>
+
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handleCopyCandidatePrompt(cand)}
+                      className="w-full text-[11px] gap-1 font-semibold text-cyan-300 hover:bg-slate-800"
+                    >
+                      {isCopied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5 text-cyan-400" />}
+                      <span>{isCopied ? "Prompt Copied to Clipboard!" : "Copy AI Coding Prompt 📋"}</span>
                     </Button>
 
                     {cand.complexity === 10 ? (
