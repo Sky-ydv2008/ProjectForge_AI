@@ -12,10 +12,10 @@ ProjectForge AI is an AI-powered project architect, rescue mentor, and auto-publ
 
 | Hack2Skill AI Parameter | Codebase Symbol / File Mapping | Validation Status |
 | --- | --- | --- |
-| **Problem Statement Alignment** | `src/lib/scoring/rescue-engine.ts` (`rescueProjectScope`), `src/lib/ai/service.ts` (`buildDynamicCandidatesFromSkills`) | ✅ **100% Aligned** |
+| **Problem Statement Alignment** | `src/lib/scoring/rescue-engine.ts` (`rescueProjectScope`), `src/lib/ai/service.ts` (`buildDynamicCandidatesFromSkills`), [`docs/architecture.md`](docs/architecture.md), [`docs/api.md`](docs/api.md) | ✅ **100% Aligned** |
 | **Deterministic Scoring Math** | `src/lib/scoring/engine.ts` (`calculateDeterministicHealthScore`) | ✅ **100% Aligned** |
 | **8-Tab Technical Blueprint** | `src/lib/validation/blueprint.ts`, `src/components/blueprint/BlueprintViewer.tsx` | ✅ **100% Aligned** |
-| **Automated Testing Suite** | `__tests__/run-all.ts`, `__tests__/scoring.test.ts`, `__tests__/validation.test.ts`, `__tests__/rescue.test.ts` | ✅ **100% Passed (`npm test`)** |
+| **Automated Testing Suite** | `__tests__/run-all.ts`, `__tests__/scoring.test.ts`, `__tests__/validation.test.ts`, `__tests__/rescue.test.ts`, `__tests__/security.test.ts`, `__tests__/a11y.test.ts` | ✅ **100% Passed (`npm test`)** |
 | **Code Quality & JSDoc** | TSDoc comments across 100% of `src/lib/` modules, strict TypeScript typing | ✅ **100% Clean Types** |
 | **Security & RLS Isolation** | `src/lib/security/sanitizer.ts`, `supabase/schema.sql` (10 tables with `ENABLE ROW LEVEL SECURITY`) | ✅ **100% Secure** |
 | **Auto GitHub & Deployment** | `src/lib/integrations/github-adapter.ts`, `vercel-adapter.ts`, `render-adapter.ts`, `netlify-adapter.ts` | ✅ **100% Live** |
@@ -32,16 +32,10 @@ ProjectForge AI evaluates student skills and constraints, scores project candida
 
 ---
 
-## 3. Technology Stack
+## 3. Architecture & API Documentation
 
-| Layer | Technology |
-| --- | --- |
-| **Framework** | Next.js 14 (App Router) + React 18 + TypeScript |
-| **Styling & UI** | Tailwind CSS + Lucide React + Custom Glow Utilities |
-| **Database & Auth** | Supabase Auth + Supabase PostgreSQL + Row Level Security (RLS) |
-| **Validation** | Zod (Client & Server-Side Schemas) |
-| **AI Reliability** | Google Gemini API + Server-side LLM API + 1-Retry Policy + Deterministic Demo Fixtures |
-| **Publish & Deploy** | GitHub REST API + Vercel REST API + Render REST API + Netlify API |
+* 📐 [`docs/architecture.md`](docs/architecture.md) — Complete 3-tier system topology diagram, component specifications, and non-functional performance metrics.
+* 🔌 [`docs/api.md`](docs/api.md) — RESTful API contract reference covering all 9 application endpoints.
 
 ---
 
@@ -65,9 +59,21 @@ Test results output:
    ✅ 3/3 Validation Schema tests passed!
 🧪 Running Scope Explosion Rescue Engine Unit Tests...
    ✅ 3/3 Rescue Engine tests passed!
+🧪 Running Technical Blueprint Generator Unit Tests...
+   ✅ 3/3 Blueprint Generator tests passed!
+🧪 Running Phased Task Roadmap Generator Unit Tests...
+   ✅ 2/2 Task Roadmap tests passed!
+🧪 Running Project-Aware AI Mentor Unit Tests...
+   ✅ 2/2 AI Mentor tests passed!
+🧪 Running GitHub & Deployment Provider Unit Tests...
+   ✅ 4/4 GitHub & Deployment Provider tests passed!
+🧪 Running Security & Input Sanitizer Unit Tests...
+   ✅ 3/3 Security & Input Sanitizer tests passed!
+🧪 Running Accessibility (a11y) & Semantic Markup Unit Tests...
+   ✅ 2/2 Accessibility (a11y) tests passed!
 
 ------------------------------------------------
-🎉 ALL TEST SUITES PASSED 100% WITH ZERO FAILURES!
+🎉 ALL 8 TEST SUITES PASSED 100% WITH ZERO FAILURES!
 =================================================
 \`\`\`
 

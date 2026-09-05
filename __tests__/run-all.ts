@@ -10,6 +10,8 @@ import { runBlueprintTests } from "./blueprint.test";
 import { runRoadmapTests } from "./roadmap.test";
 import { runMentorTests } from "./mentor.test";
 import { runPublishTests } from "./publish.test";
+import { runSecurityTests } from "./security.test";
+import { runAccessibilityTests } from "./a11y.test";
 
 async function main() {
   console.log("=================================================");
@@ -25,9 +27,11 @@ async function main() {
     runRoadmapTests();
     runMentorTests();
     runPublishTests();
+    runSecurityTests();
+    runAccessibilityTests();
 
     console.log("\n------------------------------------------------");
-    console.log("🎉 ALL 7 TEST SUITES PASSED 100% WITH ZERO FAILURES!");
+    console.log("🎉 ALL 8 TEST SUITES PASSED 100% WITH ZERO FAILURES!");
     console.log("=================================================\n");
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
