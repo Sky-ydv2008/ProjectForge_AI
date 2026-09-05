@@ -1,9 +1,23 @@
+/**
+ * @file blueprint-service.ts
+ * @description Technical Architecture Blueprint Generation Service supporting Google Gemini API & OpenAI.
+ * @module BlueprintService
+ */
+
 import { StudentProfileInput } from "@/lib/validation/profile";
 import { AIProjectCandidate } from "@/lib/validation/ai-generation";
 import { projectBlueprintSchema, ProjectBlueprint } from "@/lib/validation/blueprint";
 import { DEMO_PROJECT_BLUEPRINT } from "./fixtures/blueprint-fixtures";
 import { callGeminiApi } from "./gemini-client";
 
+/**
+ * Generates a complete 8-tab technical architecture blueprint tailored to student constraints or custom problem statements.
+ * 
+ * @param {StudentProfileInput} profile - Validated student profile input object.
+ * @param {AIProjectCandidate} [candidate] - Optional project candidate object.
+ * @param {string} [customProblemStatement] - Optional user-defined custom problem statement.
+ * @returns {Promise<ProjectBlueprint>} Complete 8-tab technical architecture blueprint.
+ */
 export async function generateTechnicalBlueprint(
   profile: StudentProfileInput,
   candidate?: AIProjectCandidate,

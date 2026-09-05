@@ -1,7 +1,20 @@
+/**
+ * @file roadmap-service.ts
+ * @description Phased Build Roadmap & Task Tracker Generation Service.
+ * @module RoadmapService
+ */
+
 import { StudentProfileInput } from "@/lib/validation/profile";
 import { projectRoadmapSchema, ProjectRoadmap } from "@/lib/validation/roadmap";
 import { DEMO_PROJECT_ROADMAP } from "./fixtures/roadmap-fixtures";
 
+/**
+ * Generates a 4-phase, 12-task build roadmap tailored to student team size and timeline.
+ * 
+ * @param {StudentProfileInput} profile - Validated student profile input object.
+ * @param {string} [projectTitle] - Optional project title.
+ * @returns {Promise<ProjectRoadmap>} Phased build roadmap containing tasks and status.
+ */
 export async function generateProjectRoadmap(
   profile: StudentProfileInput,
   projectTitle?: string

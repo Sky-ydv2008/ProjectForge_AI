@@ -1,7 +1,21 @@
+/**
+ * @file mentor-service.ts
+ * @description Context-Aware AI Mentor Advisor Service supporting structured engineering responses.
+ * @module MentorService
+ */
+
 import { StudentProfileInput } from "@/lib/validation/profile";
 import { MentorMessage } from "@/lib/validation/mentor";
 import { DEMO_MENTOR_RESPONSES, QUICK_ACTION_PROMPTS } from "./fixtures/mentor-fixtures";
 
+/**
+ * Formulates a context-aware mentor reply with Recommendation, Rationale, Implementation Steps, Risks, and Time-Limited Alternative.
+ * 
+ * @param {string} userMessage - Student's question string.
+ * @param {StudentProfileInput} [profile] - Student profile object.
+ * @param {string} [projectTitle] - Active project title.
+ * @returns {Promise<MentorMessage>} Formatted mentor response object.
+ */
 export async function generateMentorResponse(
   userMessage: string,
   profile?: StudentProfileInput,

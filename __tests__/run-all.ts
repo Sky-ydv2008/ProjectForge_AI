@@ -6,8 +6,11 @@
 import { runScoringTests } from "./scoring.test";
 import { runValidationTests } from "./validation.test";
 import { runRescueTests } from "./rescue.test";
+import { runBlueprintTests } from "./blueprint.test";
+import { runRoadmapTests } from "./roadmap.test";
+import { runMentorTests } from "./mentor.test";
 
-function main() {
+async function main() {
   console.log("=================================================");
   console.log("🧪 ProjectForge AI Master Automated Test Suite");
   console.log("   Evaluated for Hack2Skill AI Code Submission");
@@ -17,9 +20,12 @@ function main() {
     runScoringTests();
     runValidationTests();
     runRescueTests();
+    runBlueprintTests();
+    runRoadmapTests();
+    runMentorTests();
 
     console.log("\n------------------------------------------------");
-    console.log("🎉 ALL TEST SUITES PASSED 100% WITH ZERO FAILURES!");
+    console.log("🎉 ALL 6 TEST SUITES PASSED 100% WITH ZERO FAILURES!");
     console.log("=================================================\n");
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
