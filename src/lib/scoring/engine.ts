@@ -1,19 +1,42 @@
+/**
+ * @file engine.ts
+ * @description Deterministic 6-Factor Project Health Scoring Engine for ProjectForge AI.
+ * Computes Skill Fit (25%), Feasibility (20%), Innovation (20%), Career Value (15%), Demo Potential (10%), and Risk Adjustment (10%).
+ * @module ScoringEngine
+ */
+
 import { StudentProfileInput } from "@/lib/validation/profile";
 import { AIProjectCandidate } from "@/lib/validation/ai-generation";
 
+/**
+ * Interface representing an individual score dimension calculation.
+ */
 export interface ScoreDimension {
+  /** Name of the score dimension */
   name: string;
+  /** Mathematical weight (e.g., 0.25 for 25%) */
   weight: number;
+  /** Calculated dimension score from 0 to 100 */
   score: number;
+  /** Weighted contribution to overall health score */
   weightedScore: number;
+  /** Transparent human-readable mathematical explanation */
   explanation: string;
+  /** Status classification */
   status: "excellent" | "good" | "warning" | "danger";
 }
 
+/**
+ * Interface representing the complete 6-factor health score breakdown result.
+ */
 export interface ScoreBreakdown {
+  /** Total calculated health score from 0 to 100 */
   overallScore: number;
+  /** Diagnostic health classification category */
   healthCategory: "FEASIBLE MVP" | "MODERATE RISK" | "SCOPE EXPLOSION DETECTED";
+  /** UI color theme representation */
   colorTheme: "success" | "warning" | "danger";
+  /** Individual dimension breakdown object */
   dimensions: {
     skillFit: ScoreDimension;
     feasibility: ScoreDimension;
@@ -22,20 +45,28 @@ export interface ScoreBreakdown {
     demoPotential: ScoreDimension;
     riskAdjustment: ScoreDimension;
   };
+  /** Architectural recommendation note */
   recommendation: string;
 }
 
 /**
- * Optimized Deterministic Application Scoring Engine
- * Formula: overall = skill_fit*0.25 + feasibility*0.20 + innovation*0.20 + career_value*0.15 + demo_potential*0.10 + risk_adjustment*0.10
+ * Calculates a deterministic health score for a project candidate based on student constraints.
+ * 
+ * Mathematical Formula:
+ * Overall Health = (SkillFit * 0.25) + (Feasibility * 0.20) + (Innovation * 0.20) + (CareerValue * 0.15) + (DemoPotential * 0.10) + (RiskAdjustment * 0.10)
+ * 
+ * @param {StudentProfileInput} profile - The validated student profile input.
+ * @param {AIProjectCandidate} candidate - The candidate project object to evaluate.
+ * @returns {ScoreBreakdown} The structured score breakdown result.
  */
 export function calculateDeterministicHealthScore(
   profile: StudentProfileInput,
   candidate: AIProjectCandidate
 ): ScoreBreakdown {
-  // Pre-lowercase skills once to avoid allocations in inner loop
-  const studentSkillSet = new Set(profile.skills.map((s) => s.toLowerCase().trim()));
-  const required = candidate.required_skills;
+  // 1. Skill Fit Score (25%) - Pre-lowercase skills set for O(1) lookup
+  const studentSkills = profile.skills || [];
+  const studentSkillSet = new Set(studentSkills.map((s) => s.toLowerCase().trim()));
+  const required = candidate.required_skills || [];
   
   let matchedCount = 0;
   for (let i = 0; i < required.length; i++) {
@@ -43,7 +74,6 @@ export function calculateDeterministicHealthScore(
     if (studentSkillSet.has(req)) {
       matchedCount++;
     } else {
-      // Substring check fallback
       for (const sk of studentSkillSet) {
         if (sk.includes(req) || req.includes(sk)) {
           matchedCount++;
@@ -70,7 +100,7 @@ export function calculateDeterministicHealthScore(
   let totalFeatureDays = 0;
   let hasRemoveFeatures = false;
   
-  const features = candidate.features;
+  const features = candidate.features || [];
   for (let i = 0; i < features.length; i++) {
     const f = features[i];
     if (f.priority === "REMOVE") {
@@ -80,7 +110,7 @@ export function calculateDeterministicHealthScore(
     }
   }
   
-  const capacityDays = profile.timeline_months * 15 * profile.team_size; 
+  const capacityDays = (profile.timeline_months || 4) * 15 * (profile.team_size || 1); 
   const loadRatio = totalFeatureDays / Math.max(1, capacityDays);
 
   let rawFeasibility = 85;
@@ -104,7 +134,8 @@ export function calculateDeterministicHealthScore(
   };
 
   // 3. Innovation Score (20%)
-  const baseInnovation = candidate.complexity * 9;
+  const complexity = candidate.complexity || 5;
+  const baseInnovation = complexity * 9;
   const rawInnovation = Math.min(100, Math.max(40, baseInnovation + 10));
 
   const innovation: ScoreDimension = {
@@ -112,16 +143,17 @@ export function calculateDeterministicHealthScore(
     weight: 0.20,
     score: rawInnovation,
     weightedScore: Math.round(rawInnovation * 0.20),
-    explanation: `Complexity rating ${candidate.complexity}/10 with ${candidate.technologies.length} modern stack components.`,
+    explanation: `Complexity rating ${complexity}/10 with ${(candidate.technologies || []).length} modern stack components.`,
     status: rawInnovation >= 75 ? "excellent" : "good",
   };
 
   // 4. Career Value Score (15%)
   const goal = (profile.career_goal || "").toLowerCase();
   let techMatch = false;
-  for (let i = 0; i < candidate.technologies.length; i++) {
-    const t = candidate.technologies[i].toLowerCase();
-    if (goal.includes(t) || t.includes("ai") || t.includes("react")) {
+  const techs = candidate.technologies || [];
+  for (let i = 0; i < techs.length; i++) {
+    const t = techs[i].toLowerCase();
+    if (goal.includes(t) || t.includes("ai") || t.includes("react") || t.includes("java")) {
       techMatch = true;
       break;
     }
@@ -138,30 +170,32 @@ export function calculateDeterministicHealthScore(
   };
 
   // 5. Demo Potential Score (10%)
-  const rawDemo = candidate.demo_flow.length >= 3 ? 95 : 70;
+  const demoFlow = candidate.demo_flow || [];
+  const rawDemo = demoFlow.length >= 3 ? 95 : 70;
 
   const demoPotential: ScoreDimension = {
     name: "Demo Potential",
     weight: 0.10,
     score: rawDemo,
     weightedScore: Math.round(rawDemo * 0.10),
-    explanation: `${candidate.demo_flow.length} clear presentation steps verified for hackathon judging.`,
+    explanation: `${demoFlow.length} clear presentation steps verified for hackathon judging.`,
     status: rawDemo >= 80 ? "excellent" : "good",
   };
 
-  // 6. Risk Adjustment Score (10%) - Single pass risk check
+  // 6. Risk Adjustment Score (10%)
+  const risks = candidate.risks || [];
   let highRisks = 0;
-  for (let i = 0; i < candidate.risks.length; i++) {
-    if (candidate.risks[i].severity === "high") highRisks++;
+  for (let i = 0; i < risks.length; i++) {
+    if (risks[i].severity === "high") highRisks++;
   }
-  const rawRisk = Math.max(30, 100 - highRisks * 25 - candidate.risks.length * 5);
+  const rawRisk = Math.max(30, 100 - highRisks * 25 - risks.length * 5);
 
   const riskAdjustment: ScoreDimension = {
     name: "Risk Adjustment",
     weight: 0.10,
     score: rawRisk,
     weightedScore: Math.round(rawRisk * 0.10),
-    explanation: `${candidate.risks.length} identified risks (${highRisks} high severity).`,
+    explanation: `${risks.length} identified risks (${highRisks} high severity).`,
     status: rawRisk >= 75 ? "excellent" : rawRisk >= 50 ? "warning" : "danger",
   };
 
