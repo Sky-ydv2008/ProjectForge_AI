@@ -3,8 +3,8 @@ import { AIProjectCandidate } from "@/lib/validation/ai-generation";
 
 export interface ScoreDimension {
   name: string;
-  weight: number; // e.g. 0.25 for 25%
-  score: number; // 0 - 100
+  weight: number;
+  score: number;
   weightedScore: number;
   explanation: string;
   status: "excellent" | "good" | "warning" | "danger";
@@ -26,19 +26,34 @@ export interface ScoreBreakdown {
 }
 
 /**
- * Deterministic Application Scoring Engine
+ * Optimized Deterministic Application Scoring Engine
  * Formula: overall = skill_fit*0.25 + feasibility*0.20 + innovation*0.20 + career_value*0.15 + demo_potential*0.10 + risk_adjustment*0.10
  */
 export function calculateDeterministicHealthScore(
   profile: StudentProfileInput,
   candidate: AIProjectCandidate
 ): ScoreBreakdown {
-  // 1. Skill Fit Score (25%)
-  const required = candidate.required_skills.map((s) => s.toLowerCase());
-  const studentSkills = profile.skills.map((s) => s.toLowerCase());
-  const matchedCount = required.filter((req) => studentSkills.some((sk) => sk.includes(req) || req.includes(sk))).length;
-  const matchRatio = required.length > 0 ? matchedCount / required.length : 0.8;
+  // Pre-lowercase skills once to avoid allocations in inner loop
+  const studentSkillSet = new Set(profile.skills.map((s) => s.toLowerCase().trim()));
+  const required = candidate.required_skills;
   
+  let matchedCount = 0;
+  for (let i = 0; i < required.length; i++) {
+    const req = required[i].toLowerCase().trim();
+    if (studentSkillSet.has(req)) {
+      matchedCount++;
+    } else {
+      // Substring check fallback
+      for (const sk of studentSkillSet) {
+        if (sk.includes(req) || req.includes(sk)) {
+          matchedCount++;
+          break;
+        }
+      }
+    }
+  }
+
+  const matchRatio = required.length > 0 ? matchedCount / required.length : 0.8;
   const expBonus = profile.experience === "advanced" ? 20 : profile.experience === "intermediate" ? 10 : 0;
   const rawSkillFit = Math.min(100, Math.round(matchRatio * 80 + expBonus));
   
@@ -51,19 +66,26 @@ export function calculateDeterministicHealthScore(
     status: rawSkillFit >= 75 ? "excellent" : rawSkillFit >= 60 ? "good" : "warning",
   };
 
-  // 2. Feasibility Score (20%)
-  const activeFeatures = candidate.features.filter((f) => f.priority !== "REMOVE");
-  const removedFeatures = candidate.features.filter((f) => f.priority === "REMOVE");
-  const totalFeatureDays = activeFeatures.reduce((acc, f) => acc + (f.estimated_days || 3), 0);
+  // 2. Feasibility Score (20%) - Single-pass feature computation
+  let totalFeatureDays = 0;
+  let hasRemoveFeatures = false;
   
-  // Available student capacity in work-days
+  const features = candidate.features;
+  for (let i = 0; i < features.length; i++) {
+    const f = features[i];
+    if (f.priority === "REMOVE") {
+      hasRemoveFeatures = true;
+    } else {
+      totalFeatureDays += f.estimated_days || 3;
+    }
+  }
+  
   const capacityDays = profile.timeline_months * 15 * profile.team_size; 
   const loadRatio = totalFeatureDays / Math.max(1, capacityDays);
 
   let rawFeasibility = 85;
-  if (removedFeatures.length > 0 && candidate.features.length >= 5) {
-    // Unrescoped scope explosion penalty
-    rawFeasibility = 35;
+  if (hasRemoveFeatures && features.length >= 5) {
+    rawFeasibility = 35; // Unrescoped scope explosion penalty
   } else if (loadRatio > 1.2) {
     rawFeasibility = 45;
   } else if (loadRatio > 0.8) {
@@ -95,8 +117,15 @@ export function calculateDeterministicHealthScore(
   };
 
   // 4. Career Value Score (15%)
-  const goal = profile.career_goal.toLowerCase();
-  const techMatch = candidate.technologies.some((t) => goal.includes(t.toLowerCase()) || t.toLowerCase().includes("ai") || t.toLowerCase().includes("react"));
+  const goal = (profile.career_goal || "").toLowerCase();
+  let techMatch = false;
+  for (let i = 0; i < candidate.technologies.length; i++) {
+    const t = candidate.technologies[i].toLowerCase();
+    if (goal.includes(t) || t.includes("ai") || t.includes("react")) {
+      techMatch = true;
+      break;
+    }
+  }
   const rawCareer = techMatch ? 90 : 75;
 
   const careerValue: ScoreDimension = {
@@ -109,8 +138,7 @@ export function calculateDeterministicHealthScore(
   };
 
   // 5. Demo Potential Score (10%)
-  const hasDemoFlow = candidate.demo_flow.length >= 3;
-  const rawDemo = hasDemoFlow ? 95 : 70;
+  const rawDemo = candidate.demo_flow.length >= 3 ? 95 : 70;
 
   const demoPotential: ScoreDimension = {
     name: "Demo Potential",
@@ -121,8 +149,11 @@ export function calculateDeterministicHealthScore(
     status: rawDemo >= 80 ? "excellent" : "good",
   };
 
-  // 6. Risk Adjustment Score (10%)
-  const highRisks = candidate.risks.filter((r) => r.severity === "high").length;
+  // 6. Risk Adjustment Score (10%) - Single pass risk check
+  let highRisks = 0;
+  for (let i = 0; i < candidate.risks.length; i++) {
+    if (candidate.risks[i].severity === "high") highRisks++;
+  }
   const rawRisk = Math.max(30, 100 - highRisks * 25 - candidate.risks.length * 5);
 
   const riskAdjustment: ScoreDimension = {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import { Sparkles, CheckCircle2, Clock, Calendar, AlertTriangle, Plus, ArrowRight, Rocket, Layers, Check, X, ShieldAlert } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
@@ -18,20 +18,42 @@ export function RoadmapTracker({ initialRoadmap }: RoadmapTrackerProps) {
   const [newTaskPhase, setNewTaskPhase] = useState("Phase 1: Foundation & Project Setup (Week 1)");
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // Compute completion metrics
-  const totalTasks = roadmap.tasks.length;
-  const completedTasks = roadmap.tasks.filter((t) => t.status === "completed").length;
-  const blockedTasks = roadmap.tasks.filter((t) => t.status === "blocked").length;
-  const inProgressTasks = roadmap.tasks.filter((t) => t.status === "in_progress").length;
-  const percentComplete = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-  
-  const totalDays = roadmap.tasks.reduce((acc, t) => acc + (t.estimated_days || 2), 0);
-  const remainingDays = roadmap.tasks
-    .filter((t) => t.status !== "completed")
-    .reduce((acc, t) => acc + (t.estimated_days || 2), 0);
+  // Single-pass memoized metric computation
+  const metrics = useMemo(() => {
+    const tasks = roadmap.tasks;
+    const total = tasks.length;
+    let completed = 0;
+    let blocked = 0;
+    let inProgress = 0;
+    let remainingDays = 0;
 
-  // Group tasks by phase
-  const phases = Array.from(new Set(roadmap.tasks.map((t) => t.phase)));
+    const phaseSet = new Set<string>();
+
+    for (let i = 0; i < tasks.length; i++) {
+      const t = tasks[i];
+      phaseSet.add(t.phase);
+
+      if (t.status === "completed") {
+        completed++;
+      } else {
+        remainingDays += t.estimated_days || 2;
+        if (t.status === "blocked") blocked++;
+        if (t.status === "in_progress") inProgress++;
+      }
+    }
+
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    return {
+      totalTasks: total,
+      completedTasks: completed,
+      blockedTasks: blocked,
+      inProgressTasks: inProgress,
+      remainingDays,
+      percentComplete: percent,
+      phases: Array.from(phaseSet),
+    };
+  }, [roadmap.tasks]);
 
   const handleToggleStatus = (taskId: string) => {
     setRoadmap((prev) => {
@@ -76,7 +98,7 @@ export function RoadmapTracker({ initialRoadmap }: RoadmapTrackerProps) {
     <div className="space-y-8">
       
       {/* Top Banner: Progress Bar & Key Metrics */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl space-y-4">
+      <div className="p-6 rounded-2xl bg-[#0d111c] border border-slate-800 shadow-card space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
@@ -101,7 +123,7 @@ export function RoadmapTracker({ initialRoadmap }: RoadmapTrackerProps) {
             </Button>
 
             <Link href="/publish">
-              <Button variant="rescue" size="md" className="gap-2 text-xs font-bold shadow-lg shadow-emerald-500/10">
+              <Button variant="rescue" size="md" className="gap-2 text-xs font-bold shadow-sm">
                 <Rocket className="h-4 w-4 fill-current" />
                 <span>Publish to GitHub & Deploy →</span>
               </Button>
@@ -114,15 +136,15 @@ export function RoadmapTracker({ initialRoadmap }: RoadmapTrackerProps) {
           <div className="flex items-center justify-between text-xs font-mono">
             <span className="text-slate-300 flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-              <span>Build Progress: {completedTasks} / {totalTasks} Tasks Completed</span>
+              <span>Build Progress: {metrics.completedTasks} / {metrics.totalTasks} Tasks Completed</span>
             </span>
-            <span className="text-cyan-400 font-bold text-sm">{percentComplete}% Complete</span>
+            <span className="text-cyan-400 font-bold text-sm">{metrics.percentComplete}% Complete</span>
           </div>
 
           <div className="w-full h-3 rounded-full bg-slate-950 border border-slate-800 overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-emerald-400 transition-all duration-500"
-              style={{ width: `${percentComplete}%` }}
+              className="h-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-emerald-400 transition-all duration-300"
+              style={{ width: `${metrics.percentComplete}%` }}
             />
           </div>
         </div>
@@ -131,30 +153,30 @@ export function RoadmapTracker({ initialRoadmap }: RoadmapTrackerProps) {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2">
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
             <div className="text-[10px] font-mono text-slate-500 uppercase">Completed</div>
-            <div className="text-lg font-bold text-emerald-400 font-mono mt-0.5">{completedTasks} Tasks</div>
+            <div className="text-lg font-bold text-emerald-400 font-mono mt-0.5">{metrics.completedTasks} Tasks</div>
           </div>
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
             <div className="text-[10px] font-mono text-slate-500 uppercase">In Progress</div>
-            <div className="text-lg font-bold text-cyan-400 font-mono mt-0.5">{inProgressTasks} Tasks</div>
+            <div className="text-lg font-bold text-cyan-400 font-mono mt-0.5">{metrics.inProgressTasks} Tasks</div>
           </div>
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
             <div className="text-[10px] font-mono text-slate-500 uppercase">Blocked / Delayed</div>
-            <div className="text-lg font-bold text-red-400 font-mono mt-0.5">{blockedTasks} Tasks</div>
+            <div className="text-lg font-bold text-red-400 font-mono mt-0.5">{metrics.blockedTasks} Tasks</div>
           </div>
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
             <div className="text-[10px] font-mono text-slate-500 uppercase">Remaining Work</div>
-            <div className="text-lg font-bold text-indigo-400 font-mono mt-0.5">{remainingDays} Days</div>
+            <div className="text-lg font-bold text-indigo-400 font-mono mt-0.5">{metrics.remainingDays} Days</div>
           </div>
         </div>
       </div>
 
       {/* Emergency Scope Cut Warning Banner */}
-      {blockedTasks > 0 && (
-        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+      {metrics.blockedTasks > 0 && (
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex flex-col sm:flex-row items-center justify-between gap-3 shadow-sm">
           <div className="flex items-center gap-2">
             <ShieldAlert className="h-5 w-5 text-amber-400 shrink-0" />
             <div>
-              <span className="font-bold">Emergency Scope Cut Suggestion:</span> You have {blockedTasks} blocked task(s). Consider deferring optional features (e.g. Twilio SMS Alerts) to V2 to save 2 build days!
+              <span className="font-bold">Emergency Scope Cut Suggestion:</span> You have {metrics.blockedTasks} blocked task(s). Consider deferring optional features (e.g. Twilio SMS Alerts) to V2 to save 2 build days!
             </div>
           </div>
           <Link href="/rescue">
@@ -167,7 +189,7 @@ export function RoadmapTracker({ initialRoadmap }: RoadmapTrackerProps) {
 
       {/* Add Custom Task Form */}
       {showAddForm && (
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="bg-[#0d111c] border-slate-800">
           <CardContent className="p-4">
             <form onSubmit={handleAddTask} className="flex flex-col sm:flex-row gap-3">
               <input
@@ -176,18 +198,18 @@ export function RoadmapTracker({ initialRoadmap }: RoadmapTrackerProps) {
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
                 placeholder="e.g. Add Docker containerization setup"
-                className="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-cyan-500"
+                className="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-cyan-500 font-sans"
               />
               <select
                 value={newTaskPhase}
                 onChange={(e) => setNewTaskPhase(e.target.value)}
                 className="px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-200 focus:outline-none"
               >
-                {phases.map((p) => (
+                {metrics.phases.map((p) => (
                   <option key={p} value={p}>{p}</option>
                 ))}
               </select>
-              <Button type="submit" variant="primary" size="sm" className="text-xs">Add Task</Button>
+              <Button type="submit" variant="primary" size="sm" className="text-xs font-bold">Add Task</Button>
             </form>
           </CardContent>
         </Card>
@@ -195,13 +217,13 @@ export function RoadmapTracker({ initialRoadmap }: RoadmapTrackerProps) {
 
       {/* Phased Roadmap Kanban / Task Lists */}
       <div className="space-y-6">
-        {phases.map((phaseName) => {
+        {metrics.phases.map((phaseName) => {
           const phaseTasks = roadmap.tasks.filter((t) => t.phase === phaseName);
           const phaseCompleted = phaseTasks.filter((t) => t.status === "completed").length;
           const isPhaseDone = phaseCompleted === phaseTasks.length;
 
           return (
-            <Card key={phaseName} glow={isPhaseDone ? "cyan" : "none"} className="bg-slate-900 border-slate-800">
+            <Card key={phaseName} glow={isPhaseDone ? "cyan" : "none"} className="bg-[#0d111c] border-slate-800">
               <CardHeader className="border-b border-slate-800 pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base font-bold text-white flex items-center gap-2">
@@ -223,7 +245,7 @@ export function RoadmapTracker({ initialRoadmap }: RoadmapTrackerProps) {
                       t.status === "completed"
                         ? "bg-slate-950/60 border-emerald-500/30 text-slate-400 line-through"
                         : t.status === "in_progress"
-                          ? "bg-slate-950 border-cyan-500/40 text-slate-100 shadow-glow-cyan"
+                          ? "bg-slate-950 border-cyan-500/40 text-slate-100 shadow-sm"
                           : t.status === "blocked"
                             ? "bg-red-500/10 border-red-500/40 text-red-300"
                             : "bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700"
