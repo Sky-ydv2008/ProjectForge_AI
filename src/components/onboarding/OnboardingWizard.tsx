@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Compass, CheckCircle2, Sparkles, ArrowRight, ArrowLeft, ShieldCheck, Cpu, Code2, Users, Calendar, DollarSign, Target, AlertCircle, Plus, X } from "lucide-react";
+import { Compass, CheckCircle2, Sparkles, ArrowRight, ArrowLeft, ShieldCheck, Cpu, Code2, Users, Calendar, DollarSign, Target, AlertCircle, Plus, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -42,6 +42,13 @@ export function OnboardingWizard() {
         skills: exists ? prev.skills.filter((s) => s !== skill) : [...prev.skills, skill],
       };
     });
+  };
+
+  const handleResetSkills = () => {
+    setFormData((prev) => ({
+      ...prev,
+      skills: [],
+    }));
   };
 
   const handleAddCustomSkill = (e: React.FormEvent) => {
@@ -214,10 +221,20 @@ export function OnboardingWizard() {
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-slate-200">Selected Skills ({formData.skills.length})</span>
-                  <span className="text-slate-500 text-[11px]">Click to remove</span>
+                  
+                  {formData.skills.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleResetSkills}
+                      className="text-[11px] font-semibold text-slate-400 hover:text-red-400 flex items-center gap-1 transition-colors px-2 py-0.5 rounded hover:bg-red-500/10"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                      <span>Reset Skills</span>
+                    </button>
+                  )}
                 </div>
                 
-                <div className="flex flex-wrap gap-1.5">
+                <div className="flex flex-wrap gap-1.5 pt-1">
                   {formData.skills.map((skill) => (
                     <span
                       key={skill}
@@ -229,7 +246,7 @@ export function OnboardingWizard() {
                     </span>
                   ))}
                   {formData.skills.length === 0 && (
-                    <span className="text-xs text-slate-500 font-italic">No skills selected yet. Select from catalog below.</span>
+                    <span className="text-xs text-slate-500 italic">No skills selected. Select skills from catalog below or add a custom skill.</span>
                   )}
                 </div>
               </div>
@@ -251,7 +268,19 @@ export function OnboardingWizard() {
 
               {/* Categorized Full Skills Catalog */}
               <div className="space-y-4 pt-2">
-                <div className="text-xs font-bold text-white uppercase tracking-wider">Categorized Skills Catalog</div>
+                <div className="flex items-center justify-between text-xs font-bold text-white uppercase tracking-wider">
+                  <span>Categorized Skills Catalog</span>
+                  {formData.skills.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleResetSkills}
+                      className="text-[11px] font-medium text-slate-400 hover:text-red-400 flex items-center gap-1 transition-colors"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                      <span>Clear All Selection</span>
+                    </button>
+                  )}
+                </div>
                 {SKILL_CATEGORIES.map((cat) => (
                   <div key={cat.category} className="space-y-2">
                     <span className="text-[11px] font-semibold text-slate-400">{cat.category}</span>
