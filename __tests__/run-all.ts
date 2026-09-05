@@ -9,6 +9,7 @@ import { runRescueTests } from "./rescue.test";
 import { runBlueprintTests } from "./blueprint.test";
 import { runRoadmapTests } from "./roadmap.test";
 import { runMentorTests } from "./mentor.test";
+import { runPublishTests } from "./publish.test";
 
 async function main() {
   console.log("=================================================");
@@ -23,9 +24,10 @@ async function main() {
     runBlueprintTests();
     runRoadmapTests();
     runMentorTests();
+    runPublishTests();
 
     console.log("\n------------------------------------------------");
-    console.log("🎉 ALL 6 TEST SUITES PASSED 100% WITH ZERO FAILURES!");
+    console.log("🎉 ALL 7 TEST SUITES PASSED 100% WITH ZERO FAILURES!");
     console.log("=================================================\n");
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
