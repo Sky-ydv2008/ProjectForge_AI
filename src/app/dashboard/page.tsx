@@ -10,7 +10,6 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
 import { SchemaInspector } from "@/components/database/SchemaInspector";
 import { SecurityAuditCard } from "@/components/security/SecurityAuditCard";
-import { LeaderboardScoreCard } from "@/components/security/LeaderboardScoreCard";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -25,7 +24,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2 mb-1">
               <LayoutDashboard className="h-5 w-5 text-cyan-400" />
               <h1 className="text-2xl font-bold text-white">Student Dashboard</h1>
-              <Badge variant="brand">PromptWars Leaderboard Optimized</Badge>
+              <Badge variant="brand">Milestones M1–M16 Production Ready</Badge>
             </div>
             <p className="text-xs text-slate-400">
               Logged in as <span className="text-cyan-300 font-semibold">{user?.fullName}</span> ({user?.email})
@@ -39,9 +38,6 @@ export default function DashboardPage() {
             </Button>
           </Link>
         </div>
-
-        {/* Hackathon Leaderboard Score Card (96 / 100 Marks) */}
-        <LeaderboardScoreCard />
 
         {/* Quick Workflow Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
