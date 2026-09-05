@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, Compass, CheckCircle2, ArrowRight, BarChart2, ShieldAlert, Cpu, Layers, Code2, AlertTriangle, Table } from "lucide-react";
+import { Sparkles, Compass, CheckCircle2, ArrowRight, BarChart2, ShieldAlert, Cpu, Layers, Code2, AlertTriangle, Filter } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -12,18 +12,49 @@ import { calculateDeterministicHealthScore, ScoreBreakdown } from "@/lib/scoring
 import { HealthScoreCard } from "@/components/scoring/HealthScoreCard";
 import { compareProjectCandidates, ProjectComparisonAnalysis } from "@/lib/scoring/comparison";
 import { ProjectComparison } from "./ProjectComparison";
+import { StudentProfileInput } from "@/lib/validation/profile";
 
 export function CandidateGenerator() {
-  const { profile, isProfileComplete } = useProfile();
+  const { profile: contextProfile, isProfileComplete } = useProfile();
+  const [activeProfile, setActiveProfile] = useState<StudentProfileInput | null>(contextProfile);
+  
   const [generating, setGenerating] = useState(false);
   const [candidates, setCandidates] = useState<AIProjectCandidate[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<AIProjectCandidate | null>(null);
   const [scoreBreakdown, setScoreBreakdown] = useState<ScoreBreakdown | null>(null);
   const [comparisonAnalysis, setComparisonAnalysis] = useState<ProjectComparisonAnalysis | null>(null);
   const [viewMode, setViewMode] = useState<"cards" | "matrix">("cards");
+  const [categoryFilter, setCategoryFilter] = useState<string>("All");
+
+  // Read latest saved profile from localStorage on mount
+  useEffect(() => {
+    const cached = localStorage.getItem("projectforge_student_profile");
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        setActiveProfile(parsed);
+      } catch {
+        setActiveProfile(contextProfile);
+      }
+    } else {
+      setActiveProfile(contextProfile);
+    }
+  }, [contextProfile]);
 
   const handleGenerate = async () => {
-    if (!profile) return;
+    // Re-read latest profile
+    let currentProfile = activeProfile;
+    const cached = localStorage.getItem("projectforge_student_profile");
+    if (cached) {
+      try {
+        currentProfile = JSON.parse(cached);
+        setActiveProfile(currentProfile);
+      } catch {
+        // fallback
+      }
+    }
+
+    if (!currentProfile) return;
     setGenerating(true);
     setSelectedCandidate(null);
     setScoreBreakdown(null);
@@ -32,7 +63,7 @@ export function CandidateGenerator() {
       const res = await fetch("/api/projects/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(profile),
+        body: JSON.stringify(currentProfile),
       });
 
       const data = await res.json();
@@ -40,7 +71,7 @@ export function CandidateGenerator() {
         setCandidates(data.projects);
         
         // Run Side-by-Side Comparison Analysis
-        const analysis = compareProjectCandidates(profile, data.projects);
+        const analysis = compareProjectCandidates(currentProfile, data.projects);
         setComparisonAnalysis(analysis);
       }
     } catch (err) {
@@ -52,47 +83,64 @@ export function CandidateGenerator() {
 
   const handleSelectCandidate = (cand: AIProjectCandidate) => {
     setSelectedCandidate(cand);
-    if (profile) {
-      const calculated = calculateDeterministicHealthScore(profile, cand);
+    const p = activeProfile || contextProfile;
+    if (p) {
+      const calculated = calculateDeterministicHealthScore(p, cand);
       setScoreBreakdown(calculated);
     }
   };
 
+  const filteredCandidates = candidates.filter((cand) => {
+    if (categoryFilter === "All") return true;
+    if (categoryFilter === "Feasible MVPs") return cand.complexity <= 5;
+    if (categoryFilter === "Advanced Systems") return cand.complexity > 5 && cand.complexity < 10;
+    if (categoryFilter === "Scope Rescue Target") return cand.complexity === 10;
+    return true;
+  });
+
+  const p = activeProfile || contextProfile;
+
   return (
     <div className="space-y-8">
       
-      {/* Top Banner: Profile Context & Trigger */}
+      {/* Top Banner: Active Profile Skills & Trigger */}
       <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Sparkles className="h-5 w-5 text-cyan-400" />
-            <h2 className="text-xl font-bold text-white">AI Project Candidates & Comparison</h2>
-            <Badge variant="brand">M7 Discovery & Matrix</Badge>
+            <h2 className="text-xl font-bold text-white">Skill-Driven AI Project Candidates Generator</h2>
+            <Badge variant="brand">8 Candidates Catalog</Badge>
           </div>
-          {profile ? (
-            <p className="text-xs text-slate-400">
-              Generating & scoring candidates for <span className="text-cyan-300 font-semibold">{profile.field}</span> ({profile.degree}) • {profile.team_size} Members • {profile.timeline_months} Months
-            </p>
+          {p ? (
+            <div className="space-y-1">
+              <p className="text-xs text-slate-300">
+                Generating 8 candidates tailored to skills:{" "}
+                <span className="font-mono text-cyan-300 font-bold">{p.skills.join(", ")}</span>
+              </p>
+              <div className="text-[11px] text-slate-400 font-mono">
+                Field: {p.field} • Goal: {p.career_goal} • Team: {p.team_size} Members • Timeline: {p.timeline_months} Months
+              </div>
+            </div>
           ) : (
             <p className="text-xs text-slate-400">Complete student onboarding profile to generate candidates.</p>
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 shrink-0">
           {candidates.length > 0 && (
             <div className="flex items-center p-1 rounded-lg bg-slate-950 border border-slate-800 text-xs">
               <button
                 onClick={() => setViewMode("cards")}
                 className={`px-3 py-1 rounded-md font-medium transition-all ${
-                  viewMode === "cards" ? "bg-cyan-500/20 text-cyan-400" : "text-slate-400 hover:text-white"
+                  viewMode === "cards" ? "bg-cyan-500/20 text-cyan-400 font-bold" : "text-slate-400 hover:text-white"
                 }`}
               >
-                Cards View
+                Cards View ({filteredCandidates.length})
               </button>
               <button
                 onClick={() => setViewMode("matrix")}
                 className={`px-3 py-1 rounded-md font-medium transition-all ${
-                  viewMode === "matrix" ? "bg-cyan-500/20 text-cyan-400" : "text-slate-400 hover:text-white"
+                  viewMode === "matrix" ? "bg-cyan-500/20 text-cyan-400 font-bold" : "text-slate-400 hover:text-white"
                 }`}
               >
                 Matrix View
@@ -103,19 +151,19 @@ export function CandidateGenerator() {
           <Link href="/onboarding">
             <Button variant="outline" size="sm" className="gap-1.5 text-xs">
               <Compass className="h-4 w-4" />
-              <span>Edit Profile</span>
+              <span>Edit Skills</span>
             </Button>
           </Link>
 
           <Button
             variant="rescue"
             size="md"
-            disabled={generating || !isProfileComplete}
+            disabled={generating}
             onClick={handleGenerate}
-            className="gap-2 text-xs font-semibold shadow-lg shadow-amber-500/10"
+            className="gap-2 text-xs font-bold shadow-lg shadow-amber-500/10"
           >
             <Sparkles className="h-4 w-4 fill-current" />
-            <span>{generating ? "Architecting Candidates..." : "Generate AI Project Candidates"}</span>
+            <span>{generating ? "Architecting 8 Candidates..." : "Generate Candidates From My Skills"}</span>
           </Button>
         </div>
       </div>
@@ -124,15 +172,15 @@ export function CandidateGenerator() {
       {generating && (
         <div className="p-12 rounded-2xl border border-cyan-500/30 bg-slate-900/60 text-center space-y-3 shadow-glow-cyan animate-pulse">
           <div className="h-8 w-8 mx-auto rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
-          <div className="text-sm font-semibold text-cyan-300">AI Architect Analyzing Profile Constraints & Computing Matrix...</div>
-          <div className="text-xs text-slate-400 max-w-md mx-auto">
-            Matching skills ({profile?.skills.join(", ")}) against domain viability and timing thresholds.
+          <div className="text-sm font-semibold text-cyan-300">AI Architect Generating 8 Tailored Candidates...</div>
+          <div className="text-xs text-slate-400 max-w-md mx-auto font-mono">
+            Customizing project titles, problems, and tech stacks for: {p?.skills.join(", ")}.
           </div>
         </div>
       )}
 
       {/* Selected Project Health Score Breakdown Display */}
-      {selectedCandidate && scoreBreakdown && profile && (
+      {selectedCandidate && scoreBreakdown && p && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -156,16 +204,37 @@ export function CandidateGenerator() {
       {/* Cards View */}
       {viewMode === "cards" && candidates.length > 0 && !generating && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+          
+          {/* Filter Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
+            <div className="flex items-center gap-2">
               <Layers className="h-5 w-5 text-cyan-400" />
-              <span>3 Generated Candidates Matched to Profile</span>
-            </h3>
-            <Badge variant="success">{candidates.length} Schema-Valid Candidates</Badge>
+              <h3 className="text-lg font-bold text-white">8 Generated Candidates Tailored to Your Skills</h3>
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto text-xs">
+              <span className="text-slate-500 font-semibold flex items-center gap-1">
+                <Filter className="h-3.5 w-3.5" /> Filter:
+              </span>
+              {["All", "Feasible MVPs", "Advanced Systems", "Scope Rescue Target"].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategoryFilter(cat)}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all ${
+                    categoryFilter === cat
+                      ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm"
+                      : "bg-slate-950 text-slate-400 border-slate-800 hover:text-white"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {candidates.map((cand, idx) => {
+          {/* 8 Candidates Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredCandidates.map((cand) => {
               const isSelected = selectedCandidate?.id === cand.id;
               const isTop = comparisonAnalysis?.recommendedCandidate.candidate.id === cand.id;
 
@@ -205,7 +274,7 @@ export function CandidateGenerator() {
                       </div>
                     </div>
 
-                    {/* Tech Badges */}
+                    {/* Tech Badges matching student skills */}
                     <div>
                       <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">Technologies</span>
                       <div className="flex flex-wrap gap-1">
@@ -241,18 +310,26 @@ export function CandidateGenerator() {
                       variant={isSelected ? "primary" : "outline"}
                       size="sm"
                       onClick={() => handleSelectCandidate(cand)}
-                      className="w-full text-xs gap-1.5"
+                      className="w-full text-xs gap-1.5 font-semibold"
                     >
                       {isSelected ? <CheckCircle2 className="h-3.5 w-3.5" /> : <BarChart2 className="h-3.5 w-3.5 text-cyan-400" />}
                       <span>{isSelected ? "Candidate Evaluated" : "Evaluate & Score Candidate"}</span>
                     </Button>
 
-                    <Link href="/rescue" className="w-full">
-                      <Button variant="ghost" size="sm" className="w-full text-[11px] text-amber-400 hover:bg-amber-500/10 gap-1">
-                        <ShieldAlert className="h-3.5 w-3.5" />
-                        <span>Test Scope Explosion Rescue →</span>
-                      </Button>
-                    </Link>
+                    {cand.complexity === 10 ? (
+                      <Link href="/rescue" className="w-full">
+                        <Button variant="rescue" size="sm" className="w-full text-[11px] font-bold gap-1">
+                          <ShieldAlert className="h-3.5 w-3.5" />
+                          <span>Trigger Scope Explosion Rescue →</span>
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Link href="/blueprint" className="w-full">
+                        <Button variant="ghost" size="sm" className="w-full text-[11px] text-cyan-400 hover:bg-cyan-500/10 gap-1">
+                          <span>Generate Architecture Blueprint →</span>
+                        </Button>
+                      </Link>
+                    )}
                   </CardFooter>
                 </Card>
               );
@@ -271,12 +348,12 @@ export function CandidateGenerator() {
             <div>
               <h3 className="text-base font-bold text-white">No Project Candidates Generated Yet</h3>
               <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
-                Click "Generate AI Project Candidates" above to trigger candidate generation and the side-by-side comparison matrix.
+                Click "Generate Candidates From My Skills" above to generate 8 tailored project options based on your profile skills ({p?.skills?.join(", ") || "Python, React"}).
               </p>
             </div>
-            <Button variant="rescue" size="md" onClick={handleGenerate} className="gap-2 text-xs">
+            <Button variant="rescue" size="md" onClick={handleGenerate} className="gap-2 text-xs font-bold">
               <Sparkles className="h-4 w-4 fill-current" />
-              <span>Generate Candidates Now</span>
+              <span>Generate 8 Skill-Based Candidates Now</span>
             </Button>
           </CardContent>
         </Card>

@@ -3,30 +3,36 @@ import { aiGenerationOutputSchema, AIGenerationOutput, AIProjectCandidate } from
 import { callGeminiApi } from "./gemini-client";
 
 /**
- * Dynamically generates candidate projects matching student's actual selected skills and constraints.
+ * Dynamically generates 8 distinct candidate projects matching student's actual selected skills and constraints.
  */
 export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): AIProjectCandidate[] {
-  const skills = profile.skills.length > 0 ? profile.skills : ["Python", "React", "TypeScript"];
-  const primarySkill = skills[0];
-  const secondarySkill = skills[1] || skills[0];
-  const tertiarySkill = skills[2] || skills[0];
-  const career = profile.career_goal || "Software Engineer";
-  const domain = profile.interests[0] || "Software Engineering";
+  const skills = profile.skills && profile.skills.length > 0 ? profile.skills : ["Python", "React", "TypeScript"];
+  
+  const primarySkill = skills[0] || "JavaScript";
+  const secondarySkill = skills[1] || primarySkill;
+  const tertiarySkill = skills[2] || primarySkill;
+  const quaternarySkill = skills[3] || secondarySkill;
+  const quinarySkill = skills[4] || primarySkill;
 
-  // Project 1: Primary Feasible MVP built around student's primary skills
-  const proj1: AIProjectCandidate = {
+  const career = profile.career_goal || "Software Engineer";
+  const domain1 = profile.interests[0] || "Software Engineering";
+  const domain2 = profile.interests[1] || "Predictive Analytics";
+  const domain3 = profile.interests[2] || "Enterprise SaaS";
+
+  // Candidate 1: Core Primary Skill Feasible MVP
+  const cand1: AIProjectCandidate = {
     id: `proj-${primarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-001`,
-    title: `${primarySkill} & ${secondarySkill} Smart ${domain} Platform`,
+    title: `${primarySkill} & ${secondarySkill} Smart ${domain1} Platform`,
     summary: `A high-feasibility MVP application built specifically using ${primarySkill} and ${secondarySkill} tailored for ${career} roles.`,
-    problem: `Students and organizations in ${profile.field} lack automated workflow tools and real-time telemetry analytics for ${domain}.`,
-    solution: `An automated ${primarySkill}-based core processing engine with a responsive ${secondarySkill} dashboard providing live metrics and reporting.`,
-    target_users: [`${career} Candidates`, "Technical Assessors", "Domain Managers"],
+    problem: `Organizations in ${profile.field} struggle with manual workflows and lack real-time telemetry analytics for ${domain1}.`,
+    solution: `An automated ${primarySkill}-based core engine with a responsive ${secondarySkill} dashboard providing live metrics and reporting.`,
+    target_users: [`${career} Candidates`, "Team Leads", "Domain Managers"],
     required_skills: [primarySkill, secondarySkill],
-    technologies: skills.slice(0, 5),
+    technologies: skills.slice(0, 4),
     complexity: 5,
     features: [
-      { name: `Core ${primarySkill} Processing Engine`, description: `Service backend built with ${primarySkill} processing input data streams`, priority: "MUST HAVE", estimated_days: 3 },
-      { name: `${secondarySkill} Interactive Dashboard`, description: `Web interface rendering data visualization, status flags, and user controls`, priority: "MUST HAVE", estimated_days: 3 },
+      { name: `Core ${primarySkill} Processing Engine`, description: `Service backend built with ${primarySkill} processing domain payloads`, priority: "MUST HAVE", estimated_days: 3 },
+      { name: `${secondarySkill} Interactive Dashboard`, description: `User interface rendering data visualization, status flags, and user controls`, priority: "MUST HAVE", estimated_days: 3 },
       { name: "Automated Data Export & Reports", description: "Export evaluation telemetry reports to CSV and JSON formats", priority: "SHOULD HAVE", estimated_days: 2 },
     ],
     optional_features: ["Dark theme UI", "Custom notification preferences"],
@@ -42,14 +48,14 @@ export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): 
     innovation_opportunities: [`Optimized ${primarySkill} processing pipeline`]
   };
 
-  // Project 2: Secondary Skill Domain Project
-  const proj2: AIProjectCandidate = {
+  // Candidate 2: Developer Tool & Quality Assessor
+  const cand2: AIProjectCandidate = {
     id: `proj-${tertiarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-002`,
     title: `${tertiarySkill} Automated Quality & Intelligence Assessor`,
     summary: `A specialized developer tool and analysis platform built using ${tertiarySkill} and ${primarySkill} for ${career} applicants.`,
-    problem: `Manual verification of ${domain} data streams is slow and subject to evaluation errors.`,
-    solution: `An intelligent analysis pipeline using ${tertiarySkill} to parse incoming data and generate instant radar metrics.`,
-    target_users: ["Technical Lead Evaluators", "Data Analysts", "Engineering Managers"],
+    problem: `Manual inspection of ${domain2} data streams is slow and subject to human evaluation errors.`,
+    solution: `An intelligent scanner service using ${tertiarySkill} to parse incoming data and generate instant radar metrics.`,
+    target_users: ["Technical Evaluators", "Data Analysts", "Engineering Managers"],
     required_skills: [tertiarySkill, primarySkill],
     technologies: Array.from(new Set([tertiarySkill, primarySkill, secondarySkill, "SQL"])),
     complexity: 6,
@@ -71,12 +77,137 @@ export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): 
     innovation_opportunities: [`Automated ${tertiarySkill} insights`]
   };
 
-  // Project 3: Overambitious Bloated Candidate (Trigger for Scope Explosion Rescue)
-  const proj3: AIProjectCandidate = {
-    id: `proj-bloated-003`,
-    title: `${primarySkill} ${domain} System + Blockchain Privacy + Custom Microcontroller Hardware + Dual Native Mobile Apps`,
-    summary: `An overambitious candidate combining ${primarySkill}, custom IoT hardware, Ethereum smart contracts, and dual native mobile apps.`,
-    problem: `Extremely complex multi-domain requirements causing hardware soldering dependencies and deadline failure.`,
+  // Candidate 3: Full-Stack Web SaaS Portal
+  const cand3: AIProjectCandidate = {
+    id: `proj-${secondarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-003`,
+    title: `Full-Stack ${domain3} Management Portal (${secondarySkill} + ${primarySkill})`,
+    summary: `A multi-tenant web application for managing ${domain3} workflows with secure data access controls.`,
+    problem: `Teams lack a unified SaaS portal to manage multi-step ${domain3} operations and record history.`,
+    solution: `A clean web application using ${secondarySkill} and ${primarySkill} with role-based access control and dashboard analytics.`,
+    target_users: ["Project Managers", "Team Members", "Clients"],
+    required_skills: [secondarySkill, primarySkill],
+    technologies: Array.from(new Set([secondarySkill, primarySkill, quaternarySkill, "PostgreSQL"])),
+    complexity: 5,
+    features: [
+      { name: "Multi-Tenant Auth & Role Access", description: "Role-based authorization for administrative and member views", priority: "MUST HAVE", estimated_days: 3 },
+      { name: `${secondarySkill} Operations Board`, description: "Interactive drag-and-drop management interface", priority: "MUST HAVE", estimated_days: 3 },
+      { name: "Activity Logging & Audit Trail", description: "Records timestamped user actions and system changes", priority: "SHOULD HAVE", estimated_days: 2 }
+    ],
+    optional_features: ["Email notification webhooks"],
+    risks: [
+      { risk: "Session state management complexity", severity: "low", probability: "low", impact: "Low", mitigation: "Use JWT session tokens" }
+    ],
+    skill_gaps: [],
+    demo_flow: ["Sign in as Admin", "Create new workspace", "Update task state on board"],
+    innovation_opportunities: ["Role-based access pattern"]
+  };
+
+  // Candidate 4: Real-Time Event & Log Stream Processing Engine
+  const cand4: AIProjectCandidate = {
+    id: `proj-${quaternarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-004`,
+    title: `Real-Time ${quaternarySkill} Log Stream Anomaly Detector`,
+    summary: `High-throughput log ingestion and event streaming pipeline built with ${quaternarySkill} and ${primarySkill}.`,
+    problem: `DevOps engineers fail to spot brute-force attacks and rate-limit violations in high-volume system logs.`,
+    solution: `An event processing service using ${quaternarySkill} to parse logs in real-time and trigger instant alert thresholds.`,
+    target_users: ["DevOps Engineers", "Security Analysts", "System Administrators"],
+    required_skills: [quaternarySkill, primarySkill],
+    technologies: Array.from(new Set([quaternarySkill, primarySkill, "Docker", "Redis"])),
+    complexity: 6,
+    features: [
+      { name: `${quaternarySkill} Log Stream Parser`, description: "Ingests 500+ log lines/sec and flags error spikes", priority: "MUST HAVE", estimated_days: 3 },
+      { name: "Threshold Alert Rule Engine", description: "Triggers visual alerts when failure count exceeds 10 in 60s", priority: "MUST HAVE", estimated_days: 3 },
+      { name: "Live Terminal Stream Viewer", description: "WebSocket terminal view showing real-time log output", priority: "SHOULD HAVE", estimated_days: 2 }
+    ],
+    optional_features: ["Export incident report to JSON"],
+    risks: [
+      { risk: "High buffer memory usage during log bursts", severity: "medium", probability: "medium", impact: "Medium", mitigation: "Use Redis ring buffer" }
+    ],
+    skill_gaps: [],
+    demo_flow: ["Start simulated log stream", "Inject synthetic brute force pattern", "Observe live alert trigger"],
+    innovation_opportunities: ["Sub-second stream processing"]
+  };
+
+  // Candidate 5: Automated Workflow & Integration Hub
+  const cand5: AIProjectCandidate = {
+    id: `proj-${quinarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-005`,
+    title: `${quinarySkill} Automated Integration & API Orchestrator`,
+    summary: `An integration hub connecting multi-service APIs using ${quinarySkill} and ${secondarySkill}.`,
+    problem: `Integrating disparate third-party REST APIs requires custom glue code and manual retry logic.`,
+    solution: `An orchestration engine with automated retry policies, payload validation, and schema mapping.`,
+    target_users: ["API Developers", "Integration Engineers"],
+    required_skills: [quinarySkill, secondarySkill],
+    technologies: Array.from(new Set([quinarySkill, secondarySkill, primarySkill, "REST APIs"])),
+    complexity: 5,
+    features: [
+      { name: "API Schema Mapper", description: "Maps incoming payload keys to target API endpoints", priority: "MUST HAVE", estimated_days: 3 },
+      { name: "Automated Retry & Backoff Pipeline", description: "Handles transient 500 errors with exponential backoff", priority: "MUST HAVE", estimated_days: 3 },
+      { name: "Execution History Inspector", description: "Logs request payloads, status codes, and execution times", priority: "SHOULD HAVE", estimated_days: 2 }
+    ],
+    optional_features: ["Webhook trigger builder"],
+    risks: [
+      { risk: "Third-party rate limiting during test runs", severity: "low", probability: "low", impact: "Low", mitigation: "Use mock API server" }
+    ],
+    skill_gaps: [],
+    demo_flow: ["Configure API endpoint target", "Trigger workflow execution", "Inspect execution audit log"],
+    innovation_opportunities: ["Resilient retry pipeline pattern"]
+  };
+
+  // Candidate 6: Interactive Data Visualization Dashboard
+  const cand6: AIProjectCandidate = {
+    id: `proj-${primarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-006`,
+    title: `Interactive ${domain1} Data Visualization & Telemetry Suite`,
+    summary: `A high-performance interactive charting and telemetry analytics dashboard built with ${primarySkill} and ${secondarySkill}.`,
+    problem: `Decision makers struggle to interpret raw data spreadsheets without visual graphs and filters.`,
+    solution: `A responsive web dashboard rendering dynamic time-series charts, breakdown heatmaps, and filter controls.`,
+    target_users: ["Business Analysts", "Product Managers", "Executives"],
+    required_skills: [primarySkill, secondarySkill],
+    technologies: Array.from(new Set([primarySkill, secondarySkill, "Chart.js", "Tailwind"])),
+    complexity: 4,
+    features: [
+      { name: "Time-Series Charting Component", description: "Renders line, bar, and area charts for historical telemetry", priority: "MUST HAVE", estimated_days: 2 },
+      { name: "Filter & Range Selector", description: "Filters telemetry metrics by date range and category", priority: "MUST HAVE", estimated_days: 2 },
+      { name: "CSV/Excel Data Import Module", description: "Parses user CSV files and auto-populates chart series", priority: "SHOULD HAVE", estimated_days: 2 }
+    ],
+    optional_features: ["Print PDF summary stylesheet"],
+    risks: [
+      { risk: "DOM re-render slowness on large dataset charts", severity: "low", probability: "low", impact: "Low", mitigation: "Use canvas-based charting" }
+    ],
+    skill_gaps: [],
+    demo_flow: ["Upload sample CSV data file", "Apply date range filter", "Export chart image"],
+    innovation_opportunities: ["Instant client-side dataset parsing"]
+  };
+
+  // Candidate 7: Predictive Optimization Engine
+  const cand7: AIProjectCandidate = {
+    id: `proj-${tertiarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-007`,
+    title: `${tertiarySkill} Algorithmic Optimization & Decision Engine`,
+    summary: `An advanced algorithmic optimization service built using ${tertiarySkill} and ${primarySkill} for ${career} applicants.`,
+    problem: `Resource allocation in ${domain2} is inefficient when relying on static heuristic rules.`,
+    solution: `An algorithmic solver that evaluates constraint combinations to calculate optimal allocation choices.`,
+    target_users: ["Operations Engineers", "System Architects"],
+    required_skills: [tertiarySkill, primarySkill],
+    technologies: Array.from(new Set([tertiarySkill, primarySkill, secondarySkill, "NumPy"])),
+    complexity: 7,
+    features: [
+      { name: "Constraint Evaluation Solver", description: "Evaluates multi-variable resource constraints to optimize outcome score", priority: "MUST HAVE", estimated_days: 4 },
+      { name: "Scenario Simulation Matrix", description: "Simulates best-case, average-case, and worst-case resource outcomes", priority: "MUST HAVE", estimated_days: 3 },
+      { name: "Decision Rationale Inspector", description: "Displays step-by-step mathematical reasoning for recommendations", priority: "SHOULD HAVE", estimated_days: 2 }
+    ],
+    optional_features: ["Export scenario comparison table"],
+    risks: [
+      { risk: "Computational complexity on large variable sets", severity: "medium", probability: "low", impact: "Medium", mitigation: "Apply heuristic pruning" }
+    ],
+    skill_gaps: [],
+    demo_flow: ["Input variable constraints", "Run algorithmic solver", "Compare simulated scenarios"],
+    innovation_opportunities: ["Transparent constraint optimization"]
+  };
+
+  // Candidate 8: Overambitious Bloated Project (Scope Explosion Target)
+  const cand8: AIProjectCandidate = {
+    id: `proj-bloated-008`,
+    title: `${primarySkill} ${domain1} System + Blockchain Privacy + Custom Microcontroller Hardware + Dual Native Mobile Apps`,
+    summary: `An overambitious candidate combining ${primarySkill}, custom microcontroller IoT hardware, Ethereum smart contracts, and native mobile apps.`,
+    problem: `Extremely complex multi-domain requirements causing hardware soldering dependencies and timeline collapse.`,
     solution: `Overkill architecture featuring physical hardware sensors, blockchain logging, dual native mobile apps, and ${primarySkill} models.`,
     target_users: ["System Administrators", "Field Technicians"],
     required_skills: [primarySkill, "Solidity", "Swift/iOS", "Embedded C++"],
@@ -104,7 +235,7 @@ export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): 
     innovation_opportunities: ["Rescope bloat into clean web MVP"]
   };
 
-  return [proj1, proj2, proj3];
+  return [cand1, cand2, cand3, cand4, cand5, cand6, cand7, cand8];
 }
 
 /**
@@ -120,13 +251,13 @@ export async function generateProjectCandidates(
   const dynamicCandidates = buildDynamicCandidatesFromSkills(profile);
 
   const systemPrompt = `You are an expert academic project architect.
-Given a student's selected programming languages and skills: [${profile.skills.join(", ")}], field of study: "${profile.field}", and target career goal: "${profile.career_goal}", generate 3 structured project candidates tailored EXACTLY to their skills.
+Given a student's selected programming languages and skills: [${profile.skills.join(", ")}], field of study: "${profile.field}", and target career goal: "${profile.career_goal}", generate 8 structured project candidates tailored EXACTLY to their skills.
 
 CRITICAL INSTRUCTIONS:
 1. Candidate technologies MUST include their declared skills: ${profile.skills.join(", ")}.
-2. Project 1 must be a highly buildable MVP.
-3. Project 2 must be an analytical developer tool.
-4. Project 3 must be an overambitious candidate combining their skills with hardware/blockchain/mobile bloat (marked REMOVE) to trigger Scope Explosion Rescue.
+2. Generate 8 distinct, diverse project candidates.
+3. Candidates 1 to 7 must be buildable MVP projects across web, analytics, developer tools, and streaming pipelines.
+4. Candidate 8 must be an overambitious candidate combining their skills with hardware/blockchain/mobile bloat (marked REMOVE) to trigger Scope Explosion Rescue.
 5. Return ONLY a valid JSON object matching: { "projects": [...] }`;
 
   const userPrompt = `Student Profile:
@@ -147,7 +278,7 @@ CRITICAL INSTRUCTIONS:
       if (validation.success) {
         return validation.data;
       }
-      console.warn("⚠️ [Gemini API] Zod schema validation failed. Using skill-tailored candidate engine.");
+      console.warn("⚠️ [Gemini API] Zod schema validation failed. Using skill-tailored 8-candidate engine.");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error("❌ [Gemini API Error]:", msg);
@@ -190,7 +321,7 @@ CRITICAL INSTRUCTIONS:
     }
   }
 
-  // Priority 3: Use Dynamic Candidate Generator built from student's input skills
-  console.log(`ℹ️ [AI Service] Generating dynamic candidate projects based on student skills: ${profile.skills.join(", ")}`);
+  // Priority 3: Use Dynamic Candidate Generator returning 8 skill-tailored candidates
+  console.log(`ℹ️ [AI Service] Generating 8 dynamic candidate projects based on student skills: ${profile.skills.join(", ")}`);
   return { projects: dynamicCandidates };
 }
