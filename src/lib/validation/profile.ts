@@ -1,5 +1,38 @@
 import { z } from "zod";
 
+export const SKILL_CATEGORIES = [
+  {
+    category: "Programming Languages",
+    skills: ["Python", "JavaScript", "TypeScript", "Java", "C++", "C#", "Go", "Rust", "PHP", "Ruby", "Swift", "Kotlin", "SQL", "R"]
+  },
+  {
+    category: "Frontend & Web",
+    skills: ["React", "Next.js", "Vue.js", "Angular", "Svelte", "Tailwind CSS", "Redux", "HTML5/CSS3"]
+  },
+  {
+    category: "Backend & APIs",
+    skills: ["Node.js", "Express.js", "FastAPI", "Django", "Flask", "Spring Boot", "ASP.NET Core", "GraphQL", "REST APIs"]
+  },
+  {
+    category: "AI, ML & Data Science",
+    skills: ["PyTorch", "TensorFlow", "Scikit-Learn", "Pandas", "OpenCV", "LangChain", "Hugging Face", "XGBoost", "NumPy"]
+  },
+  {
+    category: "Databases & Storage",
+    skills: ["PostgreSQL", "MySQL", "MongoDB", "Redis", "Supabase", "Firebase", "SQLite", "Neo4j"]
+  },
+  {
+    category: "Cloud, DevOps & Security",
+    skills: ["Docker", "Kubernetes", "AWS", "GCP", "Azure", "Linux", "Git / GitHub", "CI/CD", "Cyber Security", "Metasploit"]
+  },
+  {
+    category: "Mobile & Embedded",
+    skills: ["React Native", "Flutter", "Android (Kotlin)", "iOS (Swift)", "Arduino", "Raspberry Pi", "ESP32", "ROS"]
+  }
+];
+
+export const ALL_PRESET_SKILLS = SKILL_CATEGORIES.flatMap((c) => c.skills);
+
 export const studentProfileSchema = z.object({
   field: z.string().min(2, "Field of study is required"),
   degree: z.string().min(2, "Degree and year are required"),

@@ -2,17 +2,12 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Compass, CheckCircle2, Sparkles, ArrowRight, ArrowLeft, ShieldCheck, Cpu, Code2, Users, Calendar, DollarSign, Target, AlertCircle } from "lucide-react";
+import { Compass, CheckCircle2, Sparkles, ArrowRight, ArrowLeft, ShieldCheck, Cpu, Code2, Users, Calendar, DollarSign, Target, AlertCircle, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { useProfile } from "@/context/ProfileContext";
-import { StudentProfileInput, DEFAULT_DEMO_PROFILE_INPUT, studentProfileSchema } from "@/lib/validation/profile";
-
-const AVAILABLE_SKILLS = [
-  "Python", "React", "TypeScript", "Next.js", "FastAPI", "PyTorch", "Node.js", 
-  "Tailwind CSS", "PostgreSQL", "Java", "C++", "Docker", "AWS", "TensorFlow", "Go"
-];
+import { StudentProfileInput, DEFAULT_DEMO_PROFILE_INPUT, SKILL_CATEGORIES } from "@/lib/validation/profile";
 
 const AVAILABLE_DOMAINS = [
   "Healthcare AI", "FinTech & Banking", "EdTech Platform", "Cybersecurity", 
@@ -24,6 +19,9 @@ export function OnboardingWizard() {
   const { profile, saveProfile, loadDemoProfile, saving, error } = useProfile();
   const [step, setStep] = useState<number>(1);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  
+  // Custom skill input state
+  const [customSkillInput, setCustomSkillInput] = useState("");
 
   // Local form state
   const [formData, setFormData] = useState<StudentProfileInput>(
@@ -44,6 +42,20 @@ export function OnboardingWizard() {
         skills: exists ? prev.skills.filter((s) => s !== skill) : [...prev.skills, skill],
       };
     });
+  };
+
+  const handleAddCustomSkill = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = customSkillInput.trim();
+    if (!trimmed) return;
+
+    if (!formData.skills.includes(trimmed)) {
+      setFormData((prev) => ({
+        ...prev,
+        skills: [...prev.skills, trimmed],
+      }));
+    }
+    setCustomSkillInput("");
   };
 
   const toggleDomain = (domain: string) => {
@@ -88,7 +100,7 @@ export function OnboardingWizard() {
   const handleSubmit = async () => {
     const success = await saveProfile(formData);
     if (success) {
-      router.push("/dashboard");
+      router.push("/projects");
     }
   };
 
@@ -96,18 +108,18 @@ export function OnboardingWizard() {
     <div className="space-y-6">
       
       {/* Top Banner with Demo Quick-Fill */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="p-4 rounded-xl bg-[#111726] border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
             <Compass className="h-5 w-5" />
           </div>
           <div>
             <div className="text-sm font-bold text-white flex items-center gap-2">
-              <span>Student Profile & Constraints Architect</span>
+              <span>Student Profile & Skill Constraints Architect</span>
               <Badge variant="brand">Zod Validated</Badge>
             </div>
             <div className="text-xs text-slate-400">
-              Provide realistic student constraints to feed the deterministic scoring engine.
+              Your selected skills directly drive the dynamic AI candidate generation engine.
             </div>
           </div>
         </div>
@@ -117,10 +129,10 @@ export function OnboardingWizard() {
           variant="rescue"
           size="sm"
           onClick={handleFillDemo}
-          className="shrink-0 gap-1.5 text-xs shadow-md"
+          className="shrink-0 gap-1.5 text-xs font-bold"
         >
           <Sparkles className="h-3.5 w-3.5 fill-current" />
-          <span>⚡ Auto-Fill Hackathon Demo Profile</span>
+          <span>⚡ Auto-Fill Demo Profile</span>
         </Button>
       </div>
 
@@ -137,10 +149,10 @@ export function OnboardingWizard() {
             onClick={() => setStep(s.num)}
             className={`p-2.5 rounded-lg border font-medium cursor-pointer transition-all ${
               step === s.num
-                ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/40 shadow-glow-cyan"
+                ? "bg-slate-800 text-cyan-300 border-slate-700 font-bold"
                 : step > s.num
-                  ? "bg-slate-900 text-emerald-400 border-emerald-500/30"
-                  : "bg-slate-900/50 text-slate-500 border-slate-800"
+                  ? "bg-[#111726] text-emerald-400 border-emerald-500/30"
+                  : "bg-[#111726]/60 text-slate-500 border-slate-800"
             }`}
           >
             <div className="font-mono text-[10px] font-bold">STEP 0{s.num}</div>
@@ -150,7 +162,7 @@ export function OnboardingWizard() {
       </div>
 
       {/* Step Content Card */}
-      <Card glow="indigo" className="bg-slate-900 border-slate-800">
+      <Card className="bg-[#111726] border-slate-800">
         <CardContent className="p-6 sm:p-8 space-y-6">
           
           {/* Global error alert */}
@@ -163,13 +175,13 @@ export function OnboardingWizard() {
 
           {/* STEP 1: Academic & Skills */}
           {step === 1 && (
-            <div className="space-y-5">
+            <div className="space-y-6">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <Code2 className="h-5 w-5 text-cyan-400" />
-                  <span>Academic Background & Technical Skills</span>
+                  <span>Academic Background & Technical Skills Catalog</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">Specify degree program and core coding technologies.</p>
+                <p className="text-xs text-slate-400 mt-1">Select your programming languages, web frameworks, ML tools, and databases.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -198,31 +210,73 @@ export function OnboardingWizard() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-2">
-                  Primary Programming Languages & Frameworks (Select all that apply)
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {AVAILABLE_SKILLS.map((skill) => {
-                    const isSelected = formData.skills.includes(skill);
-                    return (
-                      <button
-                        key={skill}
-                        type="button"
-                        onClick={() => toggleSkill(skill)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
-                          isSelected
-                            ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm"
-                            : "bg-slate-950 text-slate-400 border-slate-800 hover:text-white"
-                        }`}
-                      >
-                        {isSelected && "✓ "}
-                        {skill}
-                      </button>
-                    );
-                  })}
+              {/* Selected Skills Tags Header */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-slate-200">Selected Skills ({formData.skills.length})</span>
+                  <span className="text-slate-500 text-[11px]">Click to remove</span>
                 </div>
-                {validationErrors.skills && <span className="text-[11px] text-red-400 mt-1 block">{validationErrors.skills}</span>}
+                
+                <div className="flex flex-wrap gap-1.5">
+                  {formData.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      onClick={() => toggleSkill(skill)}
+                      className="px-2.5 py-1 rounded-md text-xs font-mono font-semibold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 cursor-pointer hover:bg-red-500/20 hover:text-red-300 hover:border-red-500/40 transition-colors flex items-center gap-1"
+                    >
+                      <span>{skill}</span>
+                      <X className="h-3 w-3" />
+                    </span>
+                  ))}
+                  {formData.skills.length === 0 && (
+                    <span className="text-xs text-slate-500 font-italic">No skills selected yet. Select from catalog below.</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Add Custom Skill Tag Input */}
+              <form onSubmit={handleAddCustomSkill} className="flex gap-2">
+                <input
+                  type="text"
+                  value={customSkillInput}
+                  onChange={(e) => setCustomSkillInput(e.target.value)}
+                  placeholder="Type any custom skill (e.g. Assembly, Spring Cloud, TensorRT, Solidity)..."
+                  className="flex-1 px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 font-mono"
+                />
+                <Button type="submit" variant="secondary" size="sm" className="gap-1 text-xs shrink-0">
+                  <Plus className="h-4 w-4" />
+                  <span>Add Custom Skill</span>
+                </Button>
+              </form>
+
+              {/* Categorized Full Skills Catalog */}
+              <div className="space-y-4 pt-2">
+                <div className="text-xs font-bold text-white uppercase tracking-wider">Categorized Skills Catalog</div>
+                {SKILL_CATEGORIES.map((cat) => (
+                  <div key={cat.category} className="space-y-2">
+                    <span className="text-[11px] font-semibold text-slate-400">{cat.category}</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {cat.skills.map((skill) => {
+                        const isSelected = formData.skills.includes(skill);
+                        return (
+                          <button
+                            key={skill}
+                            type="button"
+                            onClick={() => toggleSkill(skill)}
+                            className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${
+                              isSelected
+                                ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50 font-bold"
+                                : "bg-slate-950 text-slate-400 border-slate-800 hover:text-white hover:border-slate-700"
+                            }`}
+                          >
+                            {isSelected ? "✓ " : "+ "}
+                            {skill}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -244,7 +298,7 @@ export function OnboardingWizard() {
                   type="text"
                   value={formData.career_goal}
                   onChange={(e) => setFormData({ ...formData, career_goal: e.target.value })}
-                  placeholder="e.g. AI/ML Software Engineer, Full-Stack Developer"
+                  placeholder="e.g. AI/ML Software Engineer, Java Backend Developer"
                   className="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-cyan-500"
                 />
                 {validationErrors.career_goal && <span className="text-[11px] text-red-400 mt-1 block">{validationErrors.career_goal}</span>}
@@ -280,8 +334,8 @@ export function OnboardingWizard() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="col-span-full text-xs font-semibold text-slate-300">Prior Project Experience Level</div>
                 {[
-                  { id: "beginner" as const, title: "Beginner", desc: "First major project / Basic web & Python" },
-                  { id: "intermediate" as const, title: "Intermediate", desc: "Built web apps, REST APIs & ML scripts" },
+                  { id: "beginner" as const, title: "Beginner", desc: "First major project / Basic coding" },
+                  { id: "intermediate" as const, title: "Intermediate", desc: "Built web apps, REST APIs & scripts" },
                   { id: "advanced" as const, title: "Advanced", desc: "Full-stack architectures & custom models" },
                 ].map((exp) => (
                   <div
@@ -396,9 +450,9 @@ export function OnboardingWizard() {
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <ShieldCheck className="h-5 w-5 text-emerald-400" />
-                  <span>Review Profile & Verify Zod Schema</span>
+                  <span>Review Profile & Verify Skill Alignment</span>
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">Ready to save student profile and generate project candidates.</p>
+                <p className="text-xs text-slate-400 mt-1">Ready to save student profile and generate project candidates tailored to your skills.</p>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-3">
@@ -407,7 +461,7 @@ export function OnboardingWizard() {
                   <span className="font-semibold text-white">{formData.field} ({formData.degree})</span>
                 </div>
                 <div className="flex justify-between border-b border-slate-800 pb-2">
-                  <span className="text-slate-400">Skills ({formData.skills.length}):</span>
+                  <span className="text-slate-400">Selected Skills ({formData.skills.length}):</span>
                   <span className="font-mono text-cyan-400">{formData.skills.join(", ")}</span>
                 </div>
                 <div className="flex justify-between border-b border-slate-800 pb-2">
@@ -426,7 +480,7 @@ export function OnboardingWizard() {
 
               <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 shrink-0" />
-                <span>Zod schema validation passed successfully! Ready for AI candidate generation.</span>
+                <span>Zod schema validation passed! Project candidates will be generated using {formData.skills.join(", ")}.</span>
               </div>
             </div>
           )}
@@ -453,7 +507,7 @@ export function OnboardingWizard() {
               variant="primary"
               size="sm"
               onClick={handleNext}
-              className="gap-1.5 text-xs"
+              className="gap-1.5 text-xs font-semibold"
             >
               <span>Next Step</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -465,10 +519,10 @@ export function OnboardingWizard() {
               size="md"
               disabled={saving}
               onClick={handleSubmit}
-              className="gap-2 text-xs"
+              className="gap-2 text-xs font-bold"
             >
               <CheckCircle2 className="h-4 w-4 stroke-[2.5]" />
-              <span>{saving ? "Saving Profile..." : "Save Profile & Launch Candidates"}</span>
+              <span>{saving ? "Saving Profile..." : "Save Profile & Generate Skill-Based Candidates"}</span>
             </Button>
           )}
         </CardFooter>
