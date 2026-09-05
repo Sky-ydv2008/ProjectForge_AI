@@ -5,12 +5,12 @@ import { generateTechnicalBlueprint } from "@/lib/ai/blueprint-service";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { profile, candidate } = body;
+    const { profile, candidate, customProblemStatement } = body;
 
     const validation = studentProfileSchema.safeParse(profile);
     const profileData = validation.success ? validation.data : profile;
 
-    const blueprint = await generateTechnicalBlueprint(profileData, candidate);
+    const blueprint = await generateTechnicalBlueprint(profileData, candidate, customProblemStatement);
 
     return NextResponse.json({
       success: true,

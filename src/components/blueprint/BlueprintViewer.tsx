@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Cpu, Layers, Code2, Server, Database, Lock, Rocket, Sparkles, CheckCircle2, Copy, Check, ArrowRight, ShieldCheck } from "lucide-react";
+import { Cpu, Layers, Code2, Server, Database, Lock, Rocket, Sparkles, CheckCircle2, Copy, Check, ArrowRight, ShieldCheck, Plus, MessageSquareText, X } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -10,12 +10,24 @@ import { ProjectBlueprint } from "@/lib/validation/blueprint";
 
 interface BlueprintViewerProps {
   blueprint: ProjectBlueprint;
+  onGenerateCustomProblem?: (problemStatement: string) => void;
   onGenerateRoadmap?: () => void;
 }
 
-export function BlueprintViewer({ blueprint, onGenerateRoadmap }: BlueprintViewerProps) {
+export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerateRoadmap }: BlueprintViewerProps) {
   const [activeTab, setActiveTab] = useState<string>("overview");
   const [copied, setCopied] = useState(false);
+  
+  // Custom Problem Statement Form State
+  const [showProblemModal, setShowProblemModal] = useState(false);
+  const [customProblem, setCustomProblem] = useState("");
+  const [submittingProblem, setSubmittingProblem] = useState(false);
+
+  const samplePresets = [
+    "AWS CloudWatch Real-time Security Log Analyzer to Detect Brute-force Intrusion Attacks",
+    "FinTech Micro-Payment Fraud Detection Gateway with Isolation Forest Anomaly Scoring",
+    "Smart ICU Patient Vitals Deterioration Prediction & Real-time Triage Dashboard",
+  ];
 
   const tabs = [
     { id: "overview", label: "Overview", icon: Layers },
@@ -34,6 +46,18 @@ export function BlueprintViewer({ blueprint, onGenerateRoadmap }: BlueprintViewe
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleCustomProblemSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customProblem.trim()) return;
+
+    setSubmittingProblem(true);
+    if (onGenerateCustomProblem) {
+      await onGenerateCustomProblem(customProblem.trim());
+    }
+    setSubmittingProblem(false);
+    setShowProblemModal(false);
+  };
+
   return (
     <div className="space-y-6">
       
@@ -50,7 +74,18 @@ export function BlueprintViewer({ blueprint, onGenerateRoadmap }: BlueprintViewe
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Custom Problem Statement Trigger Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowProblemModal(true)}
+            className="gap-1.5 text-xs text-cyan-300 border-cyan-500/40 hover:bg-cyan-500/10"
+          >
+            <MessageSquareText className="h-4 w-4" />
+            <span>Input Custom Problem Statement</span>
+          </Button>
+
           <Button variant="outline" size="sm" onClick={handleCopySpec} className="gap-1.5 text-xs">
             {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
             <span>{copied ? "Spec JSON Copied!" : "Export Spec JSON"}</span>
@@ -64,6 +99,76 @@ export function BlueprintViewer({ blueprint, onGenerateRoadmap }: BlueprintViewe
           </Link>
         </div>
       </div>
+
+      {/* Custom Problem Statement Input Modal / Banner */}
+      {showProblemModal && (
+        <Card className="bg-slate-900 border-cyan-500/40 shadow-glow-cyan">
+          <CardHeader className="pb-3 border-b border-slate-800 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-base font-bold text-white flex items-center gap-2">
+                <MessageSquareText className="h-5 w-5 text-cyan-400" />
+                <span>Input Custom Problem Statement</span>
+              </CardTitle>
+              <CardDescription className="text-xs text-slate-400">
+                Provide your custom project idea or problem statement to generate a tailored 8-tab technical blueprint.
+              </CardDescription>
+            </div>
+            <button
+              onClick={() => setShowProblemModal(false)}
+              className="text-slate-400 hover:text-white p-1 rounded"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </CardHeader>
+
+          <CardContent className="p-6 space-y-4">
+            
+            {/* Presets */}
+            <div>
+              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Or Choose Quick Sample Problem Preset</span>
+              <div className="flex flex-col gap-2">
+                {samplePresets.map((preset, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => setCustomProblem(preset)}
+                    className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 text-left text-xs text-slate-300 hover:border-cyan-500/40 hover:text-white transition-all flex items-center justify-between"
+                  >
+                    <span>“{preset}”</span>
+                    <Plus className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleCustomProblemSubmit} className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Your Problem Statement / Project Goal</label>
+                <textarea
+                  rows={3}
+                  required
+                  value={customProblem}
+                  onChange={(e) => setCustomProblem(e.target.value)}
+                  placeholder="Describe your custom project problem statement here (e.g. Build an AI-driven automated code security scanner that parses GitHub repos for hardcoded secrets...)"
+                  className="w-full p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-cyan-500 font-sans"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button type="button" variant="ghost" size="sm" onClick={() => setShowProblemModal(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" variant="primary" size="md" disabled={submittingProblem || !customProblem.trim()} className="gap-2 text-xs font-bold">
+                  <Sparkles className="h-4 w-4" />
+                  <span>{submittingProblem ? "Generating Blueprint..." : "Generate Blueprint For Problem"}</span>
+                </Button>
+              </div>
+            </form>
+
+          </CardContent>
+        </Card>
+      )}
 
       {/* 8-Tab Horizontal Navigation Bar */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-800">
