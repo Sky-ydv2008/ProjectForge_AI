@@ -13,19 +13,6 @@ ProjectForge AI is an AI-powered project architect, rescue mentor, and auto-publ
 
 ---
 
-## 1. Problem Statement & Rubric Alignment Matrix
-
-| Hack2Skill AI Parameter | Codebase Symbol / File Mapping | Validation Status |
-| --- | --- | --- |
-| **Problem Statement Alignment** | `src/lib/scoring/rescue-engine.ts` (`rescueProjectScope`), [`docs/rubric.md`](docs/rubric.md), [`docs/architecture.md`](docs/architecture.md), [`docs/api.md`](docs/api.md) | ✅ **100 / 100** |
-| **Deterministic Scoring Math** | `src/lib/scoring/engine.ts` (`calculateDeterministicHealthScore`) | ✅ **100 / 100** |
-| **8-Tab Technical Blueprint** | `src/lib/validation/blueprint.ts`, `src/components/blueprint/BlueprintViewer.tsx` | ✅ **100 / 100** |
-| **Automated Testing Suite** | `__tests__/run-all.ts`, `__tests__/*.test.ts`, `jest.config.js` | ✅ **100 / 100 (`npm test`)** |
-| **Code Quality & JSDoc** | TSDoc comments across 100% of `src/lib/` & `src/app/` modules, `.eslintrc.json`, `.editorconfig` | ✅ **100 / 100 (Grade A+)** |
-| **Security & RLS Isolation** | `src/lib/security/sanitizer.ts`, `next.config.mjs` (CSP Headers), `supabase/schema.sql` (10 RLS tables) | ✅ **100 / 100** |
-| **Auto GitHub & Deployment** | `src/lib/integrations/github-adapter.ts`, `vercel-adapter.ts`, `render-adapter.ts`, `netlify-adapter.ts` | ✅ **100 / 100** |
-
----
 
 ## 2. Product Positioning
 
