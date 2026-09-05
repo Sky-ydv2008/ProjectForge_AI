@@ -6,12 +6,12 @@ import { PitchBanner } from "@/components/landing/PitchBanner";
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <article className="flex flex-col min-h-screen">
       <HeroSection />
       <RescuePreview />
       <FeaturesGrid />
       <WorkflowSection />
       <PitchBanner />
-    </div>
+    </article>
   );
 }
