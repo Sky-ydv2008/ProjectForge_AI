@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Cpu, Layers, Code2, Server, Database, Lock, Rocket, Sparkles, CheckCircle2, Copy, Check, ArrowRight, ShieldCheck, Plus, MessageSquareText, X } from "lucide-react";
+import { Cpu, Layers, Code2, Server, Database, Lock, Rocket, Sparkles, CheckCircle2, Copy, Check, ArrowRight, ShieldCheck, Plus, MessageSquareText, X, Terminal, Activity, Key } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -31,11 +31,11 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
 
   const tabs = [
     { id: "overview", label: "Overview", icon: Layers },
-    { id: "architecture", label: "Architecture", icon: Cpu },
-    { id: "features", label: "Features", icon: Code2 },
-    { id: "techstack", label: "Tech Stack", icon: Server },
-    { id: "database", label: "Database", icon: Database },
-    { id: "apis", label: "APIs & Spec", icon: Lock },
+    { id: "architecture", label: "Architecture Topology", icon: Cpu },
+    { id: "features", label: "Features & Priority", icon: Code2 },
+    { id: "techstack", label: "Tech Stack Rationale", icon: Server },
+    { id: "database", label: "Database Schema", icon: Database },
+    { id: "apis", label: "REST API Spec", icon: Lock },
     { id: "security", label: "Security & RLS", icon: ShieldCheck },
     { id: "deployment", label: "Deployment & Demo", icon: Rocket },
   ];
@@ -67,10 +67,10 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
           <div className="flex items-center gap-2 mb-1">
             <Cpu className="h-5 w-5 text-cyan-400" />
             <h2 className="text-xl font-bold text-white">{blueprint.projectTitle}</h2>
-            <Badge variant="brand">M8 Technical Blueprint</Badge>
+            <Badge variant="brand">Full Architecture Plan</Badge>
           </div>
           <p className="text-xs text-slate-400">
-            Generated technical specification ready for execution, GitHub auto-publishing, and deployment.
+            Comprehensive system architecture specification ready for implementation, GitHub auto-publishing, and deployment.
           </p>
         </div>
 
@@ -100,7 +100,7 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
         </div>
       </div>
 
-      {/* Custom Problem Statement Input Modal / Banner */}
+      {/* Custom Problem Input Modal */}
       {showProblemModal && (
         <Card className="bg-slate-900 border-cyan-500/40 shadow-glow-cyan">
           <CardHeader className="pb-3 border-b border-slate-800 flex flex-row items-center justify-between">
@@ -122,8 +122,6 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
           </CardHeader>
 
           <CardContent className="p-6 space-y-4">
-            
-            {/* Presets */}
             <div>
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-2">Or Choose Quick Sample Problem Preset</span>
               <div className="flex flex-col gap-2">
@@ -141,7 +139,6 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
               </div>
             </div>
 
-            {/* Form */}
             <form onSubmit={handleCustomProblemSubmit} className="space-y-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">Your Problem Statement / Project Goal</label>
@@ -161,16 +158,15 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
                 </Button>
                 <Button type="submit" variant="primary" size="md" disabled={submittingProblem || !customProblem.trim()} className="gap-2 text-xs font-bold">
                   <Sparkles className="h-4 w-4" />
-                  <span>{submittingProblem ? "Generating Blueprint..." : "Generate Blueprint For Problem"}</span>
+                  <span>{submittingProblem ? "Generating Architecture..." : "Generate Full Architecture Plan"}</span>
                 </Button>
               </div>
             </form>
-
           </CardContent>
         </Card>
       )}
 
-      {/* 8-Tab Horizontal Navigation Bar */}
+      {/* 8-Tab Navigation Bar */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-800">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -200,8 +196,8 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
           {activeTab === "overview" && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-bold text-white mb-1">Project Problem & Value Proposition</h3>
-                <p className="text-xs text-slate-400">High-level summary of problem statement and core MVP solution.</p>
+                <h3 className="text-lg font-bold text-white mb-1">Architectural Problem & Value Rationale</h3>
+                <p className="text-xs text-slate-400">High-level problem breakdown, solution architecture, and academic value thesis.</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
@@ -216,14 +212,23 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-2">
-                <span className="text-cyan-400 font-bold uppercase tracking-wider text-[10px]">Target Users & Core Value Proposition</span>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {blueprint.overview.targetUsers.map((u, i) => (
-                    <Badge key={i} variant="brand">{u}</Badge>
-                  ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <span className="text-cyan-400 font-bold uppercase tracking-wider text-[10px]">Target User Personas</span>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {blueprint.overview.targetUsers.map((u, i) => (
+                      <Badge key={i} variant="brand">{u}</Badge>
+                    ))}
+                  </div>
+                  <p className="text-slate-300 pt-2 border-t border-slate-900 leading-relaxed">{blueprint.overview.valueProposition}</p>
                 </div>
-                <p className="text-slate-300 pt-2 border-t border-slate-900 leading-relaxed">{blueprint.overview.valueProposition}</p>
+
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <span className="text-indigo-400 font-bold uppercase tracking-wider text-[10px]">Academic & Engineering Value Rationale</span>
+                  <p className="text-slate-300 leading-relaxed">
+                    {blueprint.overview.academicValue || "Demonstrates practical full-stack software engineering, REST microservices, zero-trust security isolation, and production deployment."}
+                  </p>
+                </div>
               </div>
             </div>
           )}
@@ -232,27 +237,60 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
           {activeTab === "architecture" && (
             <div className="space-y-6 text-xs">
               <div>
-                <h3 className="text-lg font-bold text-white mb-1">System Topology & Data Flow</h3>
-                <p className="text-slate-400">Component separation and inter-service request routing.</p>
+                <h3 className="text-lg font-bold text-white mb-1">System Topology & Inter-Service Data Flow</h3>
+                <p className="text-slate-400">Complete 3-tier component topology diagram and non-functional performance metrics.</p>
               </div>
 
+              {/* Topology Summary */}
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                <span className="text-cyan-400 font-bold uppercase tracking-wider text-[10px]">System Topology</span>
+                <span className="text-cyan-400 font-bold uppercase tracking-wider text-[10px]">System Topology Architecture</span>
                 <p className="text-slate-200 font-mono mt-1 text-sm">{blueprint.architecture.topology}</p>
               </div>
 
+              {/* Architecture Diagram Layout */}
+              <div className="p-4 rounded-xl bg-black border border-slate-800 font-mono text-[11px] text-cyan-300 space-y-2">
+                <div className="text-slate-500 text-[10px] pb-1 border-b border-slate-900">SYSTEM ARCHITECTURE DIAGRAM SPECIFICATION</div>
+                <pre className="overflow-x-auto text-emerald-400 leading-tight py-2">
+{blueprint.architecture.architectureDiagramSpec || `[ Client Browser / User UI ] ---> [ Next.js 14 App Router (Vercel Edge) ]
+                                | (Zod Schema Validation)
+                                v
+                   [ FastAPI ML Microservice (Render) ]
+                                |
+                                +---> [ XGBoost Model Inference Engine ]
+                                |
+                                v
+                   [ Supabase PostgreSQL + RLS ] <---> [ Redis Cache Tier ]`}
+                </pre>
+              </div>
+
+              {/* Component Layers */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="text-slate-400 text-[10px] uppercase font-bold">Frontend Layer</span>
+                  <span className="text-slate-400 text-[10px] uppercase font-bold">1. Presentation Layer</span>
                   <p className="text-slate-200 font-mono">{blueprint.architecture.frontendComponent}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="text-slate-400 text-[10px] uppercase font-bold">Backend Inference</span>
+                  <span className="text-slate-400 text-[10px] uppercase font-bold">2. Inference Backend</span>
                   <p className="text-slate-200 font-mono">{blueprint.architecture.backendComponent}</p>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="text-slate-400 text-[10px] uppercase font-bold">Database Layer</span>
+                  <span className="text-slate-400 text-[10px] uppercase font-bold">3. Database & Cache</span>
                   <p className="text-slate-200 font-mono">{blueprint.architecture.databaseComponent}</p>
+                </div>
+              </div>
+
+              {/* Non-Functional Metrics */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <span className="text-emerald-400 font-bold uppercase tracking-wider text-[10px]">Non-Functional Performance Targets</span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px]">
+                  {(blueprint.architecture.nonFunctionalMetrics || [
+                    "Inference Latency: < 50ms",
+                    "Throughput: 500 req/sec",
+                    "UI Render: < 100ms",
+                    "Availability: 99.9% Uptime"
+                  ]).map((m, i) => (
+                    <div key={i} className="p-2 rounded bg-slate-900 border border-slate-800 text-slate-300">• {m}</div>
+                  ))}
                 </div>
               </div>
 
@@ -267,13 +305,13 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
           {activeTab === "features" && (
             <div className="space-y-4 text-xs">
               <div>
-                <h3 className="text-lg font-bold text-white mb-1">Functional Requirements & Priority Model</h3>
-                <p className="text-slate-400">Classified using MUST HAVE / SHOULD HAVE / COULD HAVE / REMOVE model.</p>
+                <h3 className="text-lg font-bold text-white mb-1">Functional Requirements & Feature Priority Model</h3>
+                <p className="text-slate-400">Classified using MUST HAVE / SHOULD HAVE / COULD HAVE / REMOVE model with build duration estimates.</p>
               </div>
 
               <div className="space-y-2">
                 {blueprint.features.map((f, i) => (
-                  <div key={i} className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-4">
+                  <div key={i} className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                       <div className="font-bold text-white flex items-center gap-2">
                         <span>{f.name}</span>
@@ -281,9 +319,9 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
                           {f.priority}
                         </Badge>
                       </div>
-                      <p className="text-slate-400 text-[11px] mt-0.5">{f.description}</p>
+                      <p className="text-slate-400 text-[11px] mt-1">{f.description}</p>
                     </div>
-                    <span className="font-mono text-slate-400 shrink-0">{f.estimatedDays} Days</span>
+                    <span className="font-mono text-cyan-400 shrink-0 font-bold">{f.estimatedDays} Estimated Days</span>
                   </div>
                 ))}
               </div>
@@ -294,31 +332,35 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
           {activeTab === "techstack" && (
             <div className="space-y-6 text-xs">
               <div>
-                <h3 className="text-lg font-bold text-white mb-1">Recommended Technology Stack</h3>
-                <p className="text-slate-400">Selected based on student skill match and timeline constraints.</p>
+                <h3 className="text-lg font-bold text-white mb-1">Recommended Technology Stack & Rationale</h3>
+                <p className="text-slate-400">In-depth architectural justification for frontend, backend, database, and cloud choice.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="text-slate-400 text-[10px] uppercase font-bold">Frontend Framework</span>
-                  <p className="text-cyan-300 font-mono font-semibold">{blueprint.techStack.frontend}</p>
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <span className="text-slate-400 text-[10px] uppercase font-bold">Frontend Tier</span>
+                  <p className="text-cyan-300 font-mono font-bold text-sm">{blueprint.techStack.frontend}</p>
+                  <p className="text-slate-400 text-[11px]">{blueprint.techStack.frontendRationale || "Next.js App Router provides instant edge rendering and seamless Vercel integration."}</p>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="text-slate-400 text-[10px] uppercase font-bold">Backend Framework</span>
-                  <p className="text-indigo-300 font-mono font-semibold">{blueprint.techStack.backend}</p>
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <span className="text-slate-400 text-[10px] uppercase font-bold">Backend Inference Tier</span>
+                  <p className="text-indigo-300 font-mono font-bold text-sm">{blueprint.techStack.backend}</p>
+                  <p className="text-slate-400 text-[11px]">{blueprint.techStack.backendRationale || "FastAPI offers highest async performance for Python ML inference microservices."}</p>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-                  <span className="text-slate-400 text-[10px] uppercase font-bold">Database System</span>
-                  <p className="text-emerald-300 font-mono font-semibold">{blueprint.techStack.database}</p>
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <span className="text-slate-400 text-[10px] uppercase font-bold">Database Tier</span>
+                  <p className="text-emerald-300 font-mono font-bold text-sm">{blueprint.techStack.database}</p>
+                  <p className="text-slate-400 text-[11px]">{blueprint.techStack.databaseRationale || "Supabase PostgreSQL supplies relational storage with built-in RLS policies for strict user isolation."}</p>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
                   <span className="text-slate-400 text-[10px] uppercase font-bold">Cloud Hosting</span>
-                  <p className="text-amber-300 font-mono font-semibold">{blueprint.techStack.hosting}</p>
+                  <p className="text-amber-300 font-mono font-bold text-sm">{blueprint.techStack.hosting}</p>
+                  <p className="text-slate-400 text-[11px]">Vercel for frontend + Render for backend services.</p>
                 </div>
               </div>
 
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                <span className="text-cyan-400 font-bold uppercase tracking-wider text-[10px]">Architect Rationale</span>
+                <span className="text-cyan-400 font-bold uppercase tracking-wider text-[10px]">Overall Architectural Rationale</span>
                 <p className="text-slate-300 leading-relaxed">{blueprint.techStack.rationale}</p>
               </div>
             </div>
@@ -328,11 +370,11 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
           {activeTab === "database" && (
             <div className="space-y-4 text-xs">
               <div>
-                <h3 className="text-lg font-bold text-white mb-1">Database Schema Tables</h3>
-                <p className="text-slate-400">PostgreSQL relational table specifications.</p>
+                <h3 className="text-lg font-bold text-white mb-1">Database Schema & Relational Tables</h3>
+                <p className="text-slate-400">PostgreSQL relational table specifications and RLS enforcement policies.</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {blueprint.databaseDesign.map((tbl, i) => (
                   <div key={i} className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
                     <div className="flex items-center justify-between">
@@ -346,6 +388,11 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
                         <div key={idx} className="font-mono text-slate-300 text-[11px] truncate">• {col}</div>
                       ))}
                     </div>
+                    {tbl.rlsPolicy && (
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800 font-mono text-[10px] text-emerald-400">
+                        {tbl.rlsPolicy}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -356,25 +403,32 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
           {activeTab === "apis" && (
             <div className="space-y-4 text-xs">
               <div>
-                <h3 className="text-lg font-bold text-white mb-1">RESTful API Endpoints Specification</h3>
-                <p className="text-slate-400">Endpoint routes, HTTP methods, and role access controls.</p>
+                <h3 className="text-lg font-bold text-white mb-1">RESTful API Endpoints Specification Reference</h3>
+                <p className="text-slate-400">Endpoint routes, HTTP methods, payloads, response status, and access controls.</p>
               </div>
 
               <div className="space-y-3">
                 {blueprint.apiEndpoints.map((api, i) => (
-                  <div key={i} className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <span className={`px-2 py-1 rounded text-[10px] font-mono font-bold ${
-                        api.method === "POST" ? "bg-emerald-500/20 text-emerald-400" : "bg-cyan-500/20 text-cyan-400"
-                      }`}>
-                        {api.method}
-                      </span>
-                      <div>
-                        <div className="font-mono font-bold text-white">{api.route}</div>
-                        <div className="text-slate-400 text-[11px]">{api.description}</div>
+                  <div key={i} className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <span className={`px-2 py-1 rounded text-[10px] font-mono font-bold ${
+                          api.method === "POST" ? "bg-emerald-500/20 text-emerald-400" : "bg-cyan-500/20 text-cyan-400"
+                        }`}>
+                          {api.method}
+                        </span>
+                        <span className="font-mono font-bold text-white text-sm">{api.route}</span>
                       </div>
+                      <Badge variant="indigo" className="shrink-0">{api.accessLevel}</Badge>
                     </div>
-                    <Badge variant="indigo" className="shrink-0">{api.accessLevel}</Badge>
+                    <p className="text-slate-400 text-[11px]">{api.description}</p>
+
+                    {api.requestPayload && (
+                      <div className="p-2 rounded bg-slate-900 border border-slate-800 font-mono text-[11px] text-slate-300">
+                        <span className="text-slate-500 block text-[10px]">Payload / Response:</span>
+                        {api.requestPayload} {api.responseStatus ? `→ ${api.responseStatus}` : ""}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -386,7 +440,7 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
             <div className="space-y-4 text-xs">
               <div>
                 <h3 className="text-lg font-bold text-white mb-1">Security & Row Level Security (RLS) Model</h3>
-                <p className="text-slate-400">Authentication, RLS policies, input validation, and secret handling.</p>
+                <p className="text-slate-400">Authentication, RLS policies, input validation, secret management, and rate limiting.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -414,8 +468,8 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
           {activeTab === "deployment" && (
             <div className="space-y-6 text-xs">
               <div>
-                <h3 className="text-lg font-bold text-white mb-1">Deployment Plan & 2-Minute Demo Flow</h3>
-                <p className="text-slate-400">Hosting targets, required env vars, and hackathon presentation script.</p>
+                <h3 className="text-lg font-bold text-white mb-1">Deployment Topology & Hackathon Presentation Script</h3>
+                <p className="text-slate-400">Hosting targets, required env vars, CI/CD setup, and presentation flow.</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -436,7 +490,7 @@ export function BlueprintViewer({ blueprint, onGenerateCustomProblem, onGenerate
               </div>
 
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
-                <span className="text-amber-400 font-bold uppercase tracking-wider text-[10px]">2-Minute Hackathon Demo Script Flow</span>
+                <span className="text-amber-400 font-bold uppercase tracking-wider text-[10px]">2-Minute Hackathon Presentation Script Flow</span>
                 <div className="space-y-2">
                   {blueprint.deploymentPlan.demoFlowSteps.map((step, i) => (
                     <div key={i} className="p-2.5 rounded bg-slate-900 border border-slate-800 text-slate-200 flex items-center gap-2">
