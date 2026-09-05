@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, Compass, CheckCircle2, ArrowRight, BarChart2, ShieldAlert, Cpu, Layers, Code2, AlertTriangle, Filter } from "lucide-react";
+import { Sparkles, Compass, CheckCircle2, ArrowRight, BarChart2, ShieldAlert, Cpu, Layers, Code2, AlertTriangle, Filter, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -42,7 +42,6 @@ export function CandidateGenerator() {
   }, [contextProfile]);
 
   const handleGenerate = async () => {
-    // Re-read latest profile
     let currentProfile = activeProfile;
     const cached = localStorage.getItem("projectforge_student_profile");
     if (cached) {
@@ -103,22 +102,22 @@ export function CandidateGenerator() {
   return (
     <div className="space-y-8">
       
-      {/* Top Banner: Active Profile Skills & Trigger */}
-      <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-xl">
+      {/* Top Banner: Active Profile & Skills Context */}
+      <div className="p-6 rounded-2xl bg-[#0d111c] border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-card">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Sparkles className="h-5 w-5 text-cyan-400" />
-            <h2 className="text-xl font-bold text-white">Skill-Driven AI Project Candidates Generator</h2>
+            <h2 className="text-xl font-bold text-white">Skill & Career-Driven AI Candidates Generator</h2>
             <Badge variant="brand">8 Candidates Catalog</Badge>
           </div>
           {p ? (
             <div className="space-y-1">
               <p className="text-xs text-slate-300">
-                Generating 8 candidates tailored to skills:{" "}
-                <span className="font-mono text-cyan-300 font-bold">{p.skills.join(", ")}</span>
+                Target Role: <span className="font-bold text-amber-300">{p.career_goal}</span> • Active Skills:{" "}
+                <span className="font-mono text-cyan-300 font-semibold">{p.skills.slice(0, 8).join(", ")}{p.skills.length > 8 ? ` +${p.skills.length - 8} more` : ""}</span>
               </p>
               <div className="text-[11px] text-slate-400 font-mono">
-                Field: {p.field} • Goal: {p.career_goal} • Team: {p.team_size} Members • Timeline: {p.timeline_months} Months
+                Field: {p.field} • Team: {p.team_size} Members • Timeline: {p.timeline_months} Months
               </div>
             </div>
           ) : (
@@ -132,7 +131,7 @@ export function CandidateGenerator() {
               <button
                 onClick={() => setViewMode("cards")}
                 className={`px-3 py-1 rounded-md font-medium transition-all ${
-                  viewMode === "cards" ? "bg-cyan-500/20 text-cyan-400 font-bold" : "text-slate-400 hover:text-white"
+                  viewMode === "cards" ? "bg-slate-800 text-white font-bold" : "text-slate-400 hover:text-white"
                 }`}
               >
                 Cards View ({filteredCandidates.length})
@@ -140,7 +139,7 @@ export function CandidateGenerator() {
               <button
                 onClick={() => setViewMode("matrix")}
                 className={`px-3 py-1 rounded-md font-medium transition-all ${
-                  viewMode === "matrix" ? "bg-cyan-500/20 text-cyan-400 font-bold" : "text-slate-400 hover:text-white"
+                  viewMode === "matrix" ? "bg-slate-800 text-white font-bold" : "text-slate-400 hover:text-white"
                 }`}
               >
                 Matrix View
@@ -160,7 +159,7 @@ export function CandidateGenerator() {
             size="md"
             disabled={generating}
             onClick={handleGenerate}
-            className="gap-2 text-xs font-bold shadow-lg shadow-amber-500/10"
+            className="gap-2 text-xs font-bold shadow-sm"
           >
             <Sparkles className="h-4 w-4 fill-current" />
             <span>{generating ? "Architecting 8 Candidates..." : "Generate Candidates From My Skills"}</span>
@@ -170,11 +169,11 @@ export function CandidateGenerator() {
 
       {/* Loading state indicator */}
       {generating && (
-        <div className="p-12 rounded-2xl border border-cyan-500/30 bg-slate-900/60 text-center space-y-3 shadow-glow-cyan animate-pulse">
+        <div className="p-12 rounded-2xl border border-cyan-500/30 bg-[#0d111c]/80 text-center space-y-3 shadow-glow-cyan animate-pulse">
           <div className="h-8 w-8 mx-auto rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
-          <div className="text-sm font-semibold text-cyan-300">AI Architect Generating 8 Tailored Candidates...</div>
+          <div className="text-sm font-semibold text-cyan-300">AI Architect Analyzing Skills & Target Role: {p?.career_goal}...</div>
           <div className="text-xs text-slate-400 max-w-md mx-auto font-mono">
-            Customizing project titles, problems, and tech stacks for: {p?.skills.join(", ")}.
+            Generating 8 tailored project candidates for skills: {p?.skills.slice(0, 6).join(", ")}.
           </div>
         </div>
       )}
@@ -209,7 +208,7 @@ export function CandidateGenerator() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800">
             <div className="flex items-center gap-2">
               <Layers className="h-5 w-5 text-cyan-400" />
-              <h3 className="text-lg font-bold text-white">8 Generated Candidates Tailored to Your Skills</h3>
+              <h3 className="text-base font-bold text-white">8 Generated Candidates Tailored to Your Skills</h3>
             </div>
 
             <div className="flex items-center gap-1.5 overflow-x-auto text-xs">
@@ -222,7 +221,7 @@ export function CandidateGenerator() {
                   onClick={() => setCategoryFilter(cat)}
                   className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all ${
                     categoryFilter === cat
-                      ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm"
+                      ? "bg-slate-800 text-cyan-300 border-slate-700"
                       : "bg-slate-950 text-slate-400 border-slate-800 hover:text-white"
                   }`}
                 >
@@ -232,7 +231,7 @@ export function CandidateGenerator() {
             </div>
           </div>
 
-          {/* 8 Candidates Grid */}
+          {/* 8 Candidates Grid (Clean Developer Tool Styling) */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredCandidates.map((cand) => {
               const isSelected = selectedCandidate?.id === cand.id;
@@ -244,10 +243,10 @@ export function CandidateGenerator() {
                   hoverEffect
                   glow={isSelected ? "cyan" : isTop ? "cyan" : "none"}
                   className={`flex flex-col justify-between transition-all ${
-                    isSelected ? "border-cyan-400 bg-slate-900" : isTop ? "border-emerald-500/40 bg-slate-900/90" : "bg-slate-900/80 border-slate-800"
+                    isSelected ? "border-cyan-400 bg-[#111726]" : isTop ? "border-emerald-500/40 bg-[#111726]" : "bg-[#0d111c] border-slate-800"
                   }`}
                 >
-                  <CardHeader>
+                  <CardHeader className="pb-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-1.5">
                         <Badge variant="indigo">Complexity {cand.complexity}/10</Badge>
@@ -255,48 +254,48 @@ export function CandidateGenerator() {
                       </div>
                       <span className="text-[11px] font-mono text-slate-400">{cand.features.length} Features</span>
                     </div>
-                    <CardTitle className="text-base font-bold text-white mb-2 leading-snug">{cand.title}</CardTitle>
+                    <CardTitle className="text-base font-bold text-white leading-snug mb-1.5">{cand.title}</CardTitle>
                     <CardDescription className="text-xs text-slate-300 line-clamp-2">
                       {cand.summary}
                     </CardDescription>
                   </CardHeader>
 
                   <CardContent className="space-y-4 text-xs">
-                    {/* Problem & Solution */}
-                    <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-2">
+                    {/* Clean Problem & Solution Text Section */}
+                    <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2">
                       <div>
-                        <span className="text-[10px] font-bold text-red-400 uppercase tracking-wider block">Problem:</span>
-                        <p className="text-slate-300 text-[11px] leading-tight">{cand.problem}</p>
+                        <span className="text-[10px] font-bold font-mono text-slate-400 uppercase tracking-wider block">Problem Context</span>
+                        <p className="text-slate-300 text-[11px] leading-relaxed mt-0.5">{cand.problem}</p>
                       </div>
                       <div className="pt-2 border-t border-slate-900">
-                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">Solution:</span>
-                        <p className="text-slate-300 text-[11px] leading-tight">{cand.solution}</p>
+                        <span className="text-[10px] font-bold font-mono text-cyan-400 uppercase tracking-wider block">Architect Solution</span>
+                        <p className="text-slate-300 text-[11px] leading-relaxed mt-0.5">{cand.solution}</p>
                       </div>
                     </div>
 
                     {/* Tech Badges matching student skills */}
                     <div>
-                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1.5">Technologies</span>
+                      <span className="text-[10px] font-semibold font-mono text-slate-400 uppercase tracking-wider block mb-1.5">Technologies</span>
                       <div className="flex flex-wrap gap-1">
                         {cand.technologies.map((t, i) => (
-                          <span key={i} className="px-2 py-0.5 rounded bg-slate-800 text-[11px] text-cyan-300 border border-slate-700 font-mono">
+                          <span key={i} className="px-2 py-0.5 rounded bg-slate-900 text-[11px] text-cyan-300 border border-slate-800 font-mono">
                             {t}
                           </span>
                         ))}
                       </div>
                     </div>
 
-                    {/* MUST HAVE Features preview */}
+                    {/* MVP Features checklist */}
                     <div>
-                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Core MVP Features</span>
-                      <div className="space-y-1">
+                      <span className="text-[10px] font-semibold font-mono text-slate-400 uppercase tracking-wider block mb-1.5">Core Features</span>
+                      <div className="space-y-1.5">
                         {cand.features.slice(0, 3).map((f, i) => (
                           <div key={i} className="flex items-center justify-between text-[11px] text-slate-300">
-                            <span className="truncate flex items-center gap-1">
-                              <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+                            <span className="truncate flex items-center gap-1.5">
+                              <Check className="h-3 w-3 text-emerald-400 shrink-0" />
                               {f.name}
                             </span>
-                            <Badge variant={f.priority === "MUST HAVE" ? "success" : f.priority === "REMOVE" ? "danger" : "brand"} className="py-0 px-1 text-[9px]">
+                            <Badge variant={f.priority === "MUST HAVE" ? "success" : f.priority === "REMOVE" ? "danger" : "brand"} className="py-0 px-1.5 text-[9px]">
                               {f.priority}
                             </Badge>
                           </div>
@@ -305,15 +304,15 @@ export function CandidateGenerator() {
                     </div>
                   </CardContent>
 
-                  <CardFooter className="pt-3 border-t border-slate-800 flex flex-col gap-2">
+                  <CardFooter className="pt-3 border-t border-slate-800/80 flex flex-col gap-2">
                     <Button
                       variant={isSelected ? "primary" : "outline"}
                       size="sm"
                       onClick={() => handleSelectCandidate(cand)}
-                      className="w-full text-xs gap-1.5 font-semibold"
+                      className="w-full text-xs gap-1.5 font-bold"
                     >
                       {isSelected ? <CheckCircle2 className="h-3.5 w-3.5" /> : <BarChart2 className="h-3.5 w-3.5 text-cyan-400" />}
-                      <span>{isSelected ? "Candidate Evaluated" : "Evaluate & Score Candidate"}</span>
+                      <span>{isSelected ? "Candidate Evaluated" : "Evaluate Candidate & Score"}</span>
                     </Button>
 
                     {cand.complexity === 10 ? (
@@ -325,7 +324,7 @@ export function CandidateGenerator() {
                       </Link>
                     ) : (
                       <Link href="/blueprint" className="w-full">
-                        <Button variant="ghost" size="sm" className="w-full text-[11px] text-cyan-400 hover:bg-cyan-500/10 gap-1">
+                        <Button variant="ghost" size="sm" className="w-full text-[11px] text-cyan-400 hover:bg-slate-800 gap-1">
                           <span>Generate Architecture Blueprint →</span>
                         </Button>
                       </Link>
@@ -340,7 +339,7 @@ export function CandidateGenerator() {
 
       {/* Empty state prompt */}
       {candidates.length === 0 && !generating && (
-        <Card className="bg-slate-900 border-slate-800 text-center p-12">
+        <Card className="bg-[#0d111c] border-slate-800 text-center p-12">
           <CardContent className="space-y-4">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
               <Sparkles className="h-6 w-6" />
@@ -348,7 +347,7 @@ export function CandidateGenerator() {
             <div>
               <h3 className="text-base font-bold text-white">No Project Candidates Generated Yet</h3>
               <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
-                Click "Generate Candidates From My Skills" above to generate 8 tailored project options based on your profile skills ({p?.skills?.join(", ") || "Python, React"}).
+                Click "Generate Candidates From My Skills" above to generate 8 tailored project options based on your target role ({p?.career_goal || "Developer"}) and skills ({p?.skills?.slice(0, 4).join(", ") || "Python, React"}).
               </p>
             </div>
             <Button variant="rescue" size="md" onClick={handleGenerate} className="gap-2 text-xs font-bold">
