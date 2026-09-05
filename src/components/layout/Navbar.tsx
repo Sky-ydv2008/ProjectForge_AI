@@ -16,39 +16,35 @@ export function Navbar() {
   const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/onboarding", label: "Profile", icon: Compass },
-    { href: "/rescue", label: "Rescue", icon: ShieldAlert, badge: "Hero" },
+    { href: "/projects", label: "Discovery", icon: Sparkles },
+    { href: "/rescue", label: "Scope Rescue", icon: ShieldAlert, badge: "Hero" },
     { href: "/blueprint", label: "Blueprint", icon: Cpu },
     { href: "/roadmap", label: "Roadmap", icon: Sparkles },
     { href: "/mentor", label: "AI Mentor", icon: Sparkles },
-    { href: "/publish", label: "Publish & Deploy", icon: Rocket, badge: "V2" },
+    { href: "/publish", label: "Publish & Ship", icon: Rocket, badge: "V2" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 w-full border-b border-slate-800/80 bg-[#0b0f19]/90 backdrop-blur-md">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-indigo-600 shadow-glow-cyan group-hover:scale-105 transition-transform">
-            <Hammer className="h-5 w-5 text-slate-950 stroke-[2.5]" />
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-slate-100 text-slate-950 font-bold group-hover:bg-cyan-400 transition-colors">
+            <Hammer className="h-4 w-4 stroke-[2.5]" />
           </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="text-lg font-bold tracking-tight text-white group-hover:text-cyan-400 transition-colors">
-                ProjectForge<span className="text-cyan-400">.AI</span>
-              </span>
-              <Badge variant="indigo" className="hidden sm:inline-flex py-0 px-1.5 text-[10px]">
-                V2 Auto-Ship
-              </Badge>
-            </div>
-            <span className="text-[10px] text-slate-400 hidden sm:block -mt-1 font-mono">
-              AI Project Architect & Rescue
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-semibold tracking-tight text-white group-hover:text-cyan-300 transition-colors">
+              ProjectForge <span className="text-slate-400 font-normal">AI</span>
+            </span>
+            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700">
+              v2.0
             </span>
           </div>
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1">
+        <nav className="hidden xl:flex items-center gap-1">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -56,20 +52,16 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
                   isActive
-                    ? "bg-slate-800/90 text-cyan-400 border border-slate-700 shadow-sm"
-                    : "text-slate-300 hover:text-white hover:bg-slate-800/50"
+                    ? "bg-slate-800 text-white font-semibold border border-slate-700"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800/40"
                 }`}
               >
                 <Icon className={`h-3.5 w-3.5 ${isActive ? "text-cyan-400" : "text-slate-400"}`} />
                 <span>{link.label}</span>
                 {link.badge && (
-                  <span className={`ml-0.5 px-1 py-0.2 text-[9px] font-bold rounded ${
-                    link.badge === "V2" 
-                      ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" 
-                      : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                  }`}>
+                  <span className="ml-0.5 px-1 py-0.1 text-[9px] font-mono rounded bg-slate-800 text-cyan-300 border border-slate-700">
                     {link.badge}
                   </span>
                 )}
@@ -78,49 +70,42 @@ export function Navbar() {
           })}
         </nav>
 
-        {/* Right Actions / Auth State */}
+        {/* Right Actions / User State */}
         <div className="hidden sm:flex items-center gap-3">
           {isDemoMode && (
-            <Badge variant="success" className="gap-1 font-mono text-[11px]">
+            <Badge variant="success" className="gap-1 font-mono text-[10px] py-0.5">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Demo Mode Active
+              Demo Mode
             </Badge>
           )}
 
           {user ? (
-            <div className="flex items-center gap-2.5 pl-2 border-l border-slate-800">
+            <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 border border-cyan-500/30 text-xs font-bold text-cyan-400">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200">
                   {user.fullName.substring(0, 2).toUpperCase()}
                 </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-xs font-semibold text-white max-w-[120px] truncate">{user.fullName}</span>
-                  <span className="text-[10px] text-slate-400 max-w-[120px] truncate font-mono">{user.email}</span>
-                </div>
+                <span className="text-xs font-medium text-slate-200 max-w-[110px] truncate">{user.fullName}</span>
               </div>
               
-              <Button
-                variant="outline"
-                size="sm"
+              <button
                 onClick={() => logout()}
-                className="p-1.5 h-8 w-8 text-slate-400 hover:text-red-400 hover:border-red-500/30"
+                className="p-1 rounded text-slate-400 hover:text-red-400 hover:bg-slate-800 transition-colors"
                 title="Sign out"
               >
                 <LogOut className="h-3.5 w-3.5" />
-              </Button>
+              </button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="gap-1 text-xs">
-                  <Lock className="h-3.5 w-3.5 text-cyan-400" />
-                  <span>Sign In</span>
+                <Button variant="ghost" size="sm" className="text-xs">
+                  Sign In
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button size="sm" variant="primary" className="gap-1.5">
-                  <span>Sign Up</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
+                <Button size="sm" variant="primary">
+                  Get Started
                 </Button>
               </Link>
             </div>
@@ -130,17 +115,17 @@ export function Navbar() {
         {/* Mobile menu trigger */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+          className="xl:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
           aria-label="Toggle menu"
         >
-          {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
       {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-slate-800 bg-slate-900/95 px-4 py-4 backdrop-blur-lg">
-          <div className="flex flex-col space-y-2">
+        <div className="xl:hidden border-b border-slate-800 bg-slate-900/95 px-4 py-4 backdrop-blur-lg">
+          <div className="flex flex-col space-y-1">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
@@ -149,16 +134,16 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium ${
-                    isActive ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20" : "text-slate-300 hover:bg-slate-800"
+                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium ${
+                    isActive ? "bg-slate-800 text-white font-semibold border border-slate-700" : "text-slate-300 hover:bg-slate-800/60"
                   }`}
                 >
                   <div className="flex items-center gap-2">
-                    <Icon className="h-4 w-4" />
+                    <Icon className="h-4 w-4 text-cyan-400" />
                     <span>{link.label}</span>
                   </div>
                   {link.badge && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
                       {link.badge}
                     </span>
                   )}
@@ -169,10 +154,7 @@ export function Navbar() {
             <div className="pt-3 border-t border-slate-800 flex flex-col gap-2">
               {user ? (
                 <div className="flex items-center justify-between p-2 rounded-lg bg-slate-950 border border-slate-800">
-                  <div className="flex items-center gap-2 text-xs">
-                    <User className="h-4 w-4 text-cyan-400" />
-                    <span className="font-medium text-white">{user.email}</span>
-                  </div>
+                  <span className="text-xs text-slate-300 font-mono">{user.email}</span>
                   <Button variant="danger" size="sm" onClick={() => logout()}>Logout</Button>
                 </div>
               ) : (

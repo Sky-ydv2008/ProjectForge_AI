@@ -6,15 +6,15 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Badge({ className, variant = "brand", children, ...props }: BadgeProps) {
-  const baseStyles = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium tracking-wide transition-colors";
+  const baseStyles = "inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium tracking-tight border transition-colors";
   
   const variants = {
-    brand: "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20",
-    slate: "bg-slate-800 text-slate-300 border border-slate-700",
-    success: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
-    danger: "bg-red-500/10 text-red-400 border border-red-500/20",
-    warning: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
-    indigo: "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20",
+    brand: "bg-cyan-500/10 text-cyan-300 border-cyan-500/30",
+    slate: "bg-slate-800/80 text-slate-300 border-slate-700/80",
+    success: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+    danger: "bg-red-500/10 text-red-300 border-red-500/30",
+    warning: "bg-amber-500/10 text-amber-300 border-amber-500/30",
+    indigo: "bg-indigo-500/10 text-indigo-300 border-indigo-500/30",
   };
 
   return (

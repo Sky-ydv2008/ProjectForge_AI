@@ -9,40 +9,31 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#090d16",
-        foreground: "#f1f5f9",
+        background: "#0b0f19",
+        foreground: "#f8fafc",
         card: {
-          DEFAULT: "#111827",
-          border: "#1f293d",
-          hover: "#182235",
+          DEFAULT: "#111726",
+          border: "#1e293b",
+          hover: "#161e30",
         },
         brand: {
           50: "#ecfeff",
           100: "#cffafe",
-          400: "#22d3ee",
-          500: "#06b6d4",
-          600: "#0891b2",
+          400: "#38bdf8",
+          500: "#0284c7",
+          600: "#0369a1",
           accent: "#6366f1",
-          glow: "rgba(6, 182, 212, 0.15)",
         },
-        rescue: {
-          danger: "#ef4444",
-          success: "#10b981",
-          warning: "#f59e0b",
-        }
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "monospace"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
-        "glow-cyan": "0 0 25px -5px rgba(6, 182, 212, 0.3)",
-        "glow-indigo": "0 0 25px -5px rgba(99, 102, 241, 0.3)",
+        "subtle": "0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+        "card": "0 0 0 1px rgba(255, 255, 255, 0.05), 0 2px 8px 0 rgba(0, 0, 0, 0.3)",
+        "glow-subtle": "0 0 20px -3px rgba(56, 189, 248, 0.15)",
       },
-      backgroundImage: {
-        "grid-pattern": "linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px)",
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-      }
     },
   },
   plugins: [],

@@ -9,16 +9,16 @@ export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
 export function Card({ className, hoverEffect = false, glow = "none", children, ...props }: CardProps) {
   const glowStyles = {
     none: "",
-    cyan: "shadow-glow-cyan border-cyan-500/30",
-    indigo: "shadow-glow-indigo border-indigo-500/30",
-    danger: "shadow-[0_0_25px_-5px_rgba(239,68,68,0.3)] border-red-500/30",
+    cyan: "border-cyan-500/30 bg-slate-900/90",
+    indigo: "border-indigo-500/30 bg-slate-900/90",
+    danger: "border-red-500/30 bg-slate-900/90",
   };
 
   return (
     <div
       className={cn(
-        "rounded-xl bg-card border border-card-border p-6 transition-all duration-300",
-        hoverEffect && "hover:bg-card-hover hover:border-slate-700 hover:-translate-y-0.5",
+        "rounded-xl bg-[#111726] border border-[#1e293b] p-6 transition-all duration-200 shadow-card",
+        hoverEffect && "hover:bg-[#151c2e] hover:border-slate-700",
         glowStyles[glow],
         className
       )}
@@ -34,11 +34,11 @@ export function CardHeader({ className, children, ...props }: React.HTMLAttribut
 }
 
 export function CardTitle({ className, children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h3 className={cn("text-lg font-semibold tracking-tight text-white", className)} {...props}>{children}</h3>;
+  return <h3 className={cn("text-base font-semibold tracking-tight text-slate-100", className)} {...props}>{children}</h3>;
 }
 
 export function CardDescription({ className, children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("text-sm text-slate-400 leading-relaxed", className)} {...props}>{children}</p>;
+  return <p className={cn("text-xs text-slate-400 leading-relaxed", className)} {...props}>{children}</p>;
 }
 
 export function CardContent({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) {

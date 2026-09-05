@@ -8,36 +8,41 @@
   }
   
   body {
-    @apply bg-background text-foreground antialiased selection:bg-brand-500 selection:text-white;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    @apply bg-[#0b0f19] text-slate-100 antialiased selection:bg-cyan-500/30 selection:text-cyan-200;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 }
 
+/* Subtle organic grid background */
 .bg-grid {
-  background-size: 32px 32px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
 }
 
 .text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-400 via-brand-500 to-indigo-400;
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-slate-100 via-slate-200 to-cyan-300;
 }
 
-.text-gradient-rescue {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-red-400 via-amber-400 to-emerald-400;
+.text-gradient-cyan {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 to-blue-400;
 }
 
-/* Custom subtle scrollbar */
+.text-gradient-amber {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-300 to-orange-400;
+}
+
+/* Subtle human UI scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #090d16;
+  background: #0b0f19;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1f293d;
-  border-radius: 4px;
+  background: #1e293b;
+  border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+  background: #334155;
 }
