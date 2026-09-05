@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, Rocket, ShieldAlert, Sparkles, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export function PitchBanner() {
@@ -19,7 +19,7 @@ export function PitchBanner() {
             </span>
 
             <blockquote className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight max-w-3xl mx-auto leading-snug">
-              “ProjectForge doesn't just tell students what to build. <br className="hidden sm:inline" />
+              “ProjectForge doesn&apos;t just tell students what to build. <br className="hidden sm:inline" />
               <span className="text-gradient">It helps them decide, plan, rescue, publish and ship it.”</span>
             </blockquote>
 
@@ -40,7 +40,7 @@ export function PitchBanner() {
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/onboarding">
-                <Button size="lg" variant="primary" className="w-full sm:w-auto shadow-glow-cyan">
+                <Button size="lg" variant="primary" className="w-full sm:w-auto shadow-glow-cyan font-bold">
                   <span>Launch ProjectForge AI</span>
                   <ArrowRight className="h-5 w-5 ml-1" />
                 </Button>

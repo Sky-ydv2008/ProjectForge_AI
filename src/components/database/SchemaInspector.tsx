@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Database, ShieldCheck, Copy, Check, Download, Table, Key, Lock, Layers } from "lucide-react";
+import { Database, ShieldCheck, Copy, Check, Table, Lock, Layers } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -132,7 +132,7 @@ export function SchemaInspector() {
           <div>
             <div className="font-semibold text-emerald-300">Row Level Security (RLS) Isolation Enforced</div>
             <div className="text-slate-400 mt-0.5 leading-relaxed">
-              Every table enforces PostgreSQL Row Level Security (`ENABLE ROW LEVEL SECURITY`). Students cannot query, modify, or leak another student's projects, blueprints, GitHub OAuth tokens, or deployment environment variables.
+              Every table enforces PostgreSQL Row Level Security (<code className="text-cyan-400">ENABLE ROW LEVEL SECURITY</code>). Students cannot query, modify, or leak another student&apos;s projects, blueprints, GitHub OAuth tokens, or deployment environment variables.
             </div>
           </div>
         </div>

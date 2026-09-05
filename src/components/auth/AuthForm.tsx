@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Hammer, Github, Lock, Mail, User, ArrowRight, Sparkles, CheckCircle2, ShieldCheck } from "lucide-react";
+import { Hammer, Github, Lock, Mail, User, ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -27,7 +27,6 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
     loginAsDemoUser,
     error,
     clearError,
-    isDemoMode,
   } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -183,7 +182,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
       <CardFooter className="flex justify-center border-t border-slate-800/80 pt-4">
         {mode === "login" ? (
           <p className="text-xs text-slate-400">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <button
               onClick={() => setMode("signup")}
               className="text-cyan-400 hover:underline font-semibold"

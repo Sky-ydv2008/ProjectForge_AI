@@ -2,9 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, ShieldAlert, Sparkles, Rocket, Check, Code2, Hammer, Github, ExternalLink } from "lucide-react";
+import { ArrowRight, ShieldAlert, Rocket } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 
 export function HeroSection() {
   return (
@@ -27,18 +26,18 @@ export function HeroSection() {
 
         {/* Hero Title */}
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.12]">
-          Don’t just generate a project. <br className="hidden sm:inline" />
+          Don&apos;t just generate a project. <br className="hidden sm:inline" />
           <span className="text-gradient">Build the right one — then ship it.</span>
         </h1>
 
         {/* Subtitle */}
         <p className="mt-6 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
-          ProjectForge AI evaluates student skills, diagnoses scope explosion in bloated ideas, rescopes projects into buildable MVPs, and programmatically publishes to GitHub & deploys live.
+          ProjectForge AI evaluates student skills, diagnoses scope explosion in overambitious ideas, rescopes projects into buildable MVPs, and programmatically publishes to GitHub & deploys live.
         </p>
 
         {/* Tagline Highlight Box */}
         <div className="mt-6 inline-block px-4 py-2.5 rounded-xl bg-[#0d111c] border border-slate-800 text-slate-200 text-xs sm:text-sm font-mono shadow-sm">
-          <span className="text-amber-400 font-bold">Core Position:</span> “We don't give students more project ideas — we help them make better project decisions.”
+          <span className="text-amber-400 font-bold">Core Position:</span> “We don&apos;t give students more project ideas — we help them make better project decisions.”
         </div>
 
         {/* Action CTAs */}

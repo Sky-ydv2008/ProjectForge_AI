@@ -1,29 +1,49 @@
+/**
+ * @file render-adapter.ts
+ * @description Render Cloud Service Adapter for Web Services & Python ML Inference Backends.
+ * @module RenderAdapter
+ */
+
 import {
   DeploymentProviderAdapter,
   DeploymentConfig,
   DeploymentStatusResult,
 } from "./deployment-provider";
+import { logInfo, logError } from "@/lib/logger";
 
+/**
+ * Adapter class implementing Render deployment infrastructure triggers.
+ */
 export class RenderAdapter implements DeploymentProviderAdapter {
   providerName = "render" as const;
 
+  /**
+   * Validates target deployment configuration parameters.
+   * @param {DeploymentConfig} config - Target deployment configuration.
+   * @returns {Promise<boolean>} True if configuration parameters pass.
+   */
   async validateConfig(config: DeploymentConfig): Promise<boolean> {
     return Boolean(config.repositoryUrl && config.repositoryName);
   }
 
+  /**
+   * Triggers Render service deployment and environment variable mapping.
+   * @param {DeploymentConfig} config - Deployment configuration options.
+   * @returns {Promise<DeploymentStatusResult>} Deployment status result object.
+   */
   async deploy(config: DeploymentConfig): Promise<DeploymentStatusResult> {
     const token = process.env.RENDER_API_KEY;
     const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === "true" || !token;
 
     if (isDemo) {
-      console.log("ℹ️ [Render Adapter] Executing simulated Render deployment in Demo Mode.");
+      logInfo("Executing simulated Render deployment in Demo Mode.");
       const appName = config.repositoryName || "medforge-ai-backend";
       return {
         deploymentId: `srv_render_${Date.now()}`,
         provider: "render",
         status: "live",
         deploymentUrl: `https://${appName}.onrender.com`,
-        commitSha: "a1b2c3d4e5f67890",
+        commitSha: "3159b8faf0e913a29a9accc6ca64c30f8433a1c8",
         logs: [
           "[Render Build] Linking GitHub repository...",
           "[Render Build] Building Docker container environment...",
@@ -66,12 +86,13 @@ export class RenderAdapter implements DeploymentProviderAdapter {
         provider: "render",
         status: "live",
         deploymentUrl: data.service?.serviceDetails?.url || `https://${config.repositoryName}.onrender.com`,
-        commitSha: "a1b2c3d4e5f",
+        commitSha: "3159b8faf0e9",
         logs: ["Render Service Deployment succeeded."],
         deployedAt: new Date().toISOString(),
       };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
+      logError("Render Deployment Error:", msg);
       return {
         deploymentId: `srv_err_${Date.now()}`,
         provider: "render",
@@ -85,13 +106,18 @@ export class RenderAdapter implements DeploymentProviderAdapter {
     }
   }
 
+  /**
+   * Retrieves deployment status for active deployment ID.
+   * @param {string} deploymentId - Target deployment ID string.
+   * @returns {Promise<DeploymentStatusResult>} Current deployment status result.
+   */
   async getDeploymentStatus(deploymentId: string): Promise<DeploymentStatusResult> {
     return {
       deploymentId,
       provider: "render",
       status: "live",
       deploymentUrl: "https://medforge-ai-backend.onrender.com",
-      commitSha: "a1b2c3d4e5f",
+      commitSha: "3159b8faf0e9",
       logs: ["Render Service Status: Active"],
       deployedAt: new Date().toISOString(),
     };

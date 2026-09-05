@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Github, CheckCircle2, ShieldAlert, Sparkles, ExternalLink, Unlink, Lock } from "lucide-react";
+import Image from "next/image";
+import { Github, CheckCircle2, Sparkles, Unlink } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -31,14 +32,17 @@ export function GitHubConnectCard() {
         {githubState.isConnected ? (
           <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <img
+              <Image
                 src={githubState.avatarUrl || "https://avatars.githubusercontent.com/u/583231?v=4"}
                 alt="GitHub Avatar"
+                width={40}
+                height={40}
+                unoptimized
                 className="h-10 w-10 rounded-full border border-cyan-500/40 shrink-0"
               />
               <div>
                 <div className="font-bold text-white text-sm flex items-center gap-1.5">
-                  <span>@{githubState.username || "alex-chen-dev"}</span>
+                  <span>@{githubState.username || "Sky-ydv2008"}</span>
                   <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                 </div>
                 <div className="text-[11px] text-slate-400 font-mono mt-0.5 flex items-center gap-2">
@@ -81,7 +85,7 @@ export function GitHubConnectCard() {
                 className="gap-1.5 text-xs shrink-0"
               >
                 <Sparkles className="h-4 w-4 fill-current" />
-                <span>⚡ Connect Demo Account (@alex-chen-dev)</span>
+                <span>⚡ Connect Demo Account (@Sky-ydv2008)</span>
               </Button>
             </div>
           </div>

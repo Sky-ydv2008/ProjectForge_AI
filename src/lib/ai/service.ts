@@ -1,9 +1,18 @@
+/**
+ * @file service.ts
+ * @description Server-Side AI Generation Service for Candidate Projects.
+ * @module AIService
+ */
+
 import { StudentProfileInput } from "@/lib/validation/profile";
 import { aiGenerationOutputSchema, AIGenerationOutput, AIProjectCandidate } from "@/lib/validation/ai-generation";
 import { callGeminiApi } from "./gemini-client";
+import { logInfo, logWarn, logError } from "@/lib/logger";
 
 /**
  * Intelligently reorders student skills by matching against their target career goal.
+ * @param {StudentProfileInput} profile - Student profile input object.
+ * @returns {string[]} Reordered skills array with target career skills prioritized.
  */
 export function prioritizeSkillsByCareerGoal(profile: StudentProfileInput): string[] {
   const skills = profile.skills && profile.skills.length > 0 ? [...profile.skills] : ["Python", "React", "TypeScript"];
@@ -43,7 +52,9 @@ export function prioritizeSkillsByCareerGoal(profile: StudentProfileInput): stri
 }
 
 /**
- * Dynamically generates 8 distinct candidate projects matching student's actual selected skills and career goal.
+ * Dynamically generates 8 distinct candidate projects matching student's actual selected skills and constraints.
+ * @param {StudentProfileInput} profile - Student profile input object.
+ * @returns {AIProjectCandidate[]} Array of 8 customized candidate project objects.
  */
 export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): AIProjectCandidate[] {
   const sortedSkills = prioritizeSkillsByCareerGoal(profile);
@@ -59,7 +70,7 @@ export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): 
   const domain2 = profile.interests[1] || "Analytics & Performance";
   const domain3 = profile.interests[2] || "Cloud Operations";
 
-  // Candidate 1: Core Primary Skill Feasible MVP (Matches Career Goal & Skills)
+  // Candidate 1: Core Primary Skill Feasible MVP
   const cand1: AIProjectCandidate = {
     id: `proj-${primarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-001`,
     title: `${primarySkill} & ${secondarySkill} Smart ${domain1} Platform`,
@@ -142,7 +153,7 @@ export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): 
     innovation_opportunities: ["Role-based access pattern"]
   };
 
-  // Candidate 4: Real-Time Event & Log Stream Processing Engine
+  // Candidate 4: Real-Time Log Processing Engine
   const cand4: AIProjectCandidate = {
     id: `proj-${quaternarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-004`,
     title: `Real-Time ${primarySkill} Log Stream Anomaly Detector`,
@@ -167,7 +178,7 @@ export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): 
     innovation_opportunities: ["Sub-second stream processing"]
   };
 
-  // Candidate 5: Automated Workflow & Integration Hub
+  // Candidate 5: Automated Integration Hub
   const cand5: AIProjectCandidate = {
     id: `proj-${quinarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-005`,
     title: `${primarySkill} Automated Integration & API Orchestrator`,
@@ -192,7 +203,7 @@ export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): 
     innovation_opportunities: ["Resilient retry pipeline pattern"]
   };
 
-  // Candidate 6: Interactive Telemetry & Metrics Dashboard
+  // Candidate 6: Telemetry Dashboard
   const cand6: AIProjectCandidate = {
     id: `proj-${primarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-006`,
     title: `Interactive ${domain1} Telemetry & Performance Dashboard`,
@@ -217,7 +228,7 @@ export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): 
     innovation_opportunities: ["Instant client-side dataset parsing"]
   };
 
-  // Candidate 7: Algorithmic Optimization & Decision Engine
+  // Candidate 7: Algorithmic Optimization Engine
   const cand7: AIProjectCandidate = {
     id: `proj-${tertiarySkill.toLowerCase().replace(/[^a-z0-9]/g, "")}-007`,
     title: `${primarySkill} Algorithmic Optimization & Decision Engine`,
@@ -280,6 +291,8 @@ export function buildDynamicCandidatesFromSkills(profile: StudentProfileInput): 
 
 /**
  * Server-Side AI Generation Service supporting Google Gemini API, OpenAI, Groq, and Dynamic Skill Generation.
+ * @param {StudentProfileInput} profile - Validated student profile object.
+ * @returns {Promise<AIGenerationOutput>} Object containing 8 candidate projects.
  */
 export async function generateProjectCandidates(
   profile: StudentProfileInput
@@ -312,24 +325,23 @@ CRITICAL INSTRUCTIONS:
   // Priority 1: Call Google Gemini API if GEMINI_API_KEY is configured
   if (geminiApiKey && !isDemoMode) {
     try {
-      console.log(`🤖 [AI Service] Invoking Google Gemini API for career: ${profile.career_goal}, skills: ${sortedSkills.slice(0, 5).join(", ")}`);
+      logInfo(`Invoking Google Gemini API for career: ${profile.career_goal}`);
       const rawText = await callGeminiApi(systemPrompt, userPrompt, geminiApiKey);
       const parsedJson = JSON.parse(rawText);
       const validation = aiGenerationOutputSchema.safeParse(parsedJson);
       if (validation.success) {
         return validation.data;
       }
-      console.warn("⚠️ [Gemini API] Zod schema validation failed. Using career-tailored candidate engine.");
+      logWarn("Gemini API Zod schema validation failed. Using skill-tailored candidate engine.");
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.error("❌ [Gemini API Error]:", msg);
+      logError("Gemini API Error:", err);
     }
   }
 
-  // Priority 2: Call OpenAI / Groq API if OPENAI_API_KEY is configured
+  // Priority 2: Call OpenAI API if OPENAI_API_KEY is configured
   if (openaiApiKey && !isDemoMode) {
     try {
-      console.log(`🤖 [AI Service] Invoking OpenAI API for career: ${profile.career_goal}`);
+      logInfo(`Invoking OpenAI API for career: ${profile.career_goal}`);
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -357,12 +369,10 @@ CRITICAL INSTRUCTIONS:
         }
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.error("❌ [OpenAI API Error]:", msg);
+      logError("OpenAI API Error:", err);
     }
   }
 
-  // Priority 3: Use Dynamic Candidate Generator returning 8 career-tailored candidates
-  console.log(`ℹ️ [AI Service] Generating 8 dynamic candidate projects based on career: ${profile.career_goal}, skills: ${sortedSkills.slice(0, 5).join(", ")}`);
+  logInfo(`Generating 8 dynamic candidate projects based on career: ${profile.career_goal}`);
   return { projects: dynamicCandidates };
 }

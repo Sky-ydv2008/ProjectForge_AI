@@ -1,4 +1,11 @@
+/**
+ * @file github-adapter.ts
+ * @description GitHub REST API Adapter for Programmatic Repository Creation & File Commit Pushing.
+ * @module GitHubAdapter
+ */
+
 import { PublishRepoConfig } from "@/lib/validation/publish";
+import { logInfo, logError } from "@/lib/logger";
 
 export interface GitHubPublishResult {
   success: boolean;
@@ -12,6 +19,9 @@ export interface GitHubPublishResult {
 export class GitHubAdapter {
   /**
    * Generates initial project files from blueprint and candidate data.
+   * @param {PublishRepoConfig} repoConfig - Repository configuration parameters.
+   * @param {string} [projectTitle] - Active project title.
+   * @returns {Array<{ path: string, content: string }>} Array of generated project file objects.
    */
   static generateProjectFiles(repoConfig: PublishRepoConfig, projectTitle?: string) {
     const title = projectTitle || "ProjectForge AI Rescued Project";
@@ -22,21 +32,6 @@ export class GitHubAdapter {
 
 ## Overview
 This repository contains the rescued buildable MVP for **${title}**, featuring a Next.js App Router frontend, Tailwind CSS design system, and server-side API integration.
-
-## Project Structure
-\`\`\`text
-.
-├── src/
-│   ├── app/
-│   │   ├── layout.tsx
-│   │   └── page.tsx
-│   └── components/
-├── .env.example
-├── .gitignore
-├── package.json
-├── README.md
-└── LICENSE
-\`\`\`
 
 ## Preflight Verification
 - [x] Package.json valid
@@ -113,7 +108,11 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
   }
 
   /**
-   * Programmatically creates repository and commits files
+   * Programmatically creates repository and commits files via GitHub REST API.
+   * @param {string} token - GitHub OAuth access token.
+   * @param {PublishRepoConfig} repoConfig - Repository target configuration.
+   * @param {string} [projectTitle] - Active project title.
+   * @returns {Promise<GitHubPublishResult>} Publication result object with repository URL and commit SHA.
    */
   static async publishProject(
     token: string,
@@ -123,12 +122,12 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
     const isDemo = process.env.NEXT_PUBLIC_DEMO_MODE === "true" || !token || token.includes("demo");
 
     if (isDemo) {
-      console.log("ℹ️ [GitHub Adapter] Simulating programmatic repository creation & initial commit in Demo Mode.");
-      const demoRepoName = repoConfig.repositoryName || "medforge-ai-diagnostic";
+      logInfo("Simulating programmatic repository creation & initial commit in Demo Mode.");
+      const demoRepoName = repoConfig.repositoryName || "ProjectForge_AI";
       return {
         success: true,
-        repositoryUrl: `https://github.com/alex-chen-dev/${demoRepoName}`,
-        commitSha: "a1b2c3d4e5f67890",
+        repositoryUrl: `https://github.com/Sky-ydv2008/${demoRepoName}`,
+        commitSha: "3159b8faf0e913a29a9accc6ca64c30f8433a1c8",
         repositoryName: demoRepoName,
         isPrivate: repoConfig.isPrivate,
       };
@@ -194,6 +193,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
       };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
+      logError("GitHub Publish Error:", msg);
       return {
         success: false,
         repositoryUrl: "",

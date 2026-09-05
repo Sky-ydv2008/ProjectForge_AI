@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, Compass, CheckCircle2, ArrowRight, BarChart2, ShieldAlert, Cpu, Layers, Code2, AlertTriangle, Filter, Check } from "lucide-react";
+import { Sparkles, Compass, CheckCircle2, BarChart2, ShieldAlert, Layers, Filter, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -15,7 +15,7 @@ import { ProjectComparison } from "./ProjectComparison";
 import { StudentProfileInput } from "@/lib/validation/profile";
 
 export function CandidateGenerator() {
-  const { profile: contextProfile, isProfileComplete } = useProfile();
+  const { profile: contextProfile } = useProfile();
   const [activeProfile, setActiveProfile] = useState<StudentProfileInput | null>(contextProfile);
   
   const [generating, setGenerating] = useState(false);
@@ -347,7 +347,7 @@ export function CandidateGenerator() {
             <div>
               <h3 className="text-base font-bold text-white">No Project Candidates Generated Yet</h3>
               <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
-                Click "Generate Candidates From My Skills" above to generate 8 tailored project options based on your target role ({p?.career_goal || "Developer"}) and skills ({p?.skills?.slice(0, 4).join(", ") || "Python, React"}).
+                Click &quot;Generate Candidates From My Skills&quot; above to generate 8 tailored project options based on your target role ({p?.career_goal || "Developer"}) and skills ({p?.skills?.slice(0, 4).join(", ") || "Python, React"}).
               </p>
             </div>
             <Button variant="rescue" size="md" onClick={handleGenerate} className="gap-2 text-xs font-bold">
