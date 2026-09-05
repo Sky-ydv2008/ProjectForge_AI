@@ -1,3 +1,9 @@
+/**
+ * @file next.config.mjs
+ * @description Next.js Production Configuration with HTTP Security Headers & Content Security Policy (CSP).
+ * @module NextConfig
+ */
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -8,8 +14,8 @@ const nextConfig = {
         source: "/:path*",
         headers: [
           {
-            key: "X-DNS-Prefetch-Control",
-            value: "on",
+            key: "Content-Security-Policy",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:;",
           },
           {
             key: "Strict-Transport-Security",
@@ -25,7 +31,7 @@ const nextConfig = {
           },
           {
             key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
+            value: "strict-origin-when-cross-origin",
           },
           {
             key: "X-XSS-Protection",
@@ -33,7 +39,11 @@ const nextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+          {
+            key: "X-Permitted-Cross-Domain-Policies",
+            value: "none",
           },
         ],
       },

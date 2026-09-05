@@ -53,7 +53,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
   };
 
   return (
-    <Card glow="indigo" className="w-full max-w-md mx-auto shadow-2xl bg-slate-900 border-slate-800">
+    <Card glow="indigo" className="w-full max-w-md mx-auto shadow-2xl bg-slate-900 border-slate-800" role="region" aria-label="Authentication Card">
       <CardHeader className="text-center pb-4">
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-indigo-600 shadow-glow-cyan mb-3">
           <Hammer className="h-6 w-6 text-slate-950 stroke-[2.5]" />
@@ -86,6 +86,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
             variant="rescue"
             size="sm"
             onClick={handleDemoClick}
+            aria-label="Instant Demo Student Login"
             className="w-full mt-1 text-xs gap-1.5"
           >
             <span>⚡ Instant Demo Student Login</span>
@@ -100,25 +101,27 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
 
         {/* Error message alert */}
         {error && (
-          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center justify-between">
+          <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs flex items-center justify-between" role="alert">
             <span>{error}</span>
-            <button onClick={clearError} className="text-red-400 hover:text-white text-sm font-bold">×</button>
+            <button onClick={clearError} aria-label="Dismiss error" className="text-red-400 hover:text-white text-sm font-bold">×</button>
           </div>
         )}
 
         {/* Auth form */}
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="space-y-3" aria-label="Authentication Form">
           {mode === "signup" && (
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+              <label htmlFor="auth-fullname" className="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
               <div className="relative">
                 <User className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
                 <input
+                  id="auth-fullname"
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="e.g. Alex Chen"
+                  aria-label="Full Name"
                   className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
@@ -126,30 +129,34 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Student Email</label>
+            <label htmlFor="auth-email" className="block text-xs font-semibold text-slate-300 mb-1">Student Email</label>
             <div className="relative">
               <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
               <input
+                id="auth-email"
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="alex.student@university.edu"
+                aria-label="Student Email"
                 className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+            <label htmlFor="auth-password" className="block text-xs font-semibold text-slate-300 mb-1">Password</label>
             <div className="relative">
               <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
               <input
+                id="auth-password"
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
+                aria-label="Password"
                 className="w-full pl-9 pr-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-slate-100 text-xs focus:outline-none focus:border-cyan-500 transition-colors"
               />
             </div>
@@ -160,6 +167,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
             variant="primary"
             size="md"
             disabled={submitting}
+            aria-label={mode === "login" ? "Sign In to ProjectForge" : "Create Account & Continue"}
             className="w-full mt-2"
           >
             {submitting ? "Authenticating..." : mode === "login" ? "Sign In to ProjectForge" : "Create Account & Continue"}
@@ -172,6 +180,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
           variant="outline"
           size="md"
           onClick={() => loginWithGithub()}
+          aria-label="Continue with GitHub OAuth"
           className="w-full gap-2 text-xs"
         >
           <Github className="h-4 w-4 text-white" />
@@ -185,6 +194,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
             Don&apos;t have an account?{" "}
             <button
               onClick={() => setMode("signup")}
+              aria-label="Switch to Sign Up mode"
               className="text-cyan-400 hover:underline font-semibold"
             >
               Sign Up
@@ -195,6 +205,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
             Already have an account?{" "}
             <button
               onClick={() => setMode("login")}
+              aria-label="Switch to Sign In mode"
               className="text-cyan-400 hover:underline font-semibold"
             >
               Sign In
